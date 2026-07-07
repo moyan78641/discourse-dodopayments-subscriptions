@@ -14,7 +14,7 @@ module DiscourseDodoSubscriptions
       secret = SiteSetting.discourse_dodo_subscriptions_webhook_secret
       return head :forbidden if secret.blank?
 
-      payload = request.body.read
+      payload = request.raw_post
       webhook_id = request.headers["webhook-id"]
       timestamp = request.headers["webhook-timestamp"]
       signature = request.headers["webhook-signature"]
@@ -46,8 +46,8 @@ module DiscourseDodoSubscriptions
       render_json_error I18n.t("discourse_dodo_subscriptions.webhook_missing_headers"),
                         status: :forbidden
     rescue Discourse::InvalidAccess => e
-      render_json_error(e.message.presence || I18n.t("discourse_dodo_subscriptions.webhook_invalid_signature"),
-                        status: :forbidden)
+      mark_failed_webhook(webhook_id, e)
+      render_json_error(invalid_access_message(e), status: :forbidden)
     rescue Discourse::NotFound => e
       mark_failed_webhook(webhook_id, e)
       render_json_error e.message
@@ -66,6 +66,14 @@ module DiscourseDodoSubscriptions
         error: error.message,
         updated_at: Time.zone.now,
       )
+    end
+
+    def invalid_access_message(error)
+      message = error.message.to_s
+      return I18n.t("discourse_dodo_subscriptions.webhook_invalid_signature") if message.blank?
+      return I18n.t("discourse_dodo_subscriptions.webhook_invalid_signature") if message == error.class.name
+
+      message
     end
   end
 end

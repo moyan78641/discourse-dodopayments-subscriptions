@@ -56,12 +56,14 @@ module DiscourseDodoSubscriptions
 
     def signature_candidates
       signed_payload = "#{webhook_id}.#{timestamp}.#{payload}"
-      digest = OpenSSL::HMAC.digest("SHA256", secret_bytes, signed_payload)
-      hexdigest = OpenSSL::HMAC.hexdigest("SHA256", secret_bytes, signed_payload)
-      base64 = Base64.strict_encode64(digest)
-      urlsafe_base64 = Base64.urlsafe_encode64(digest, padding: false)
+      secret_candidates.flat_map do |candidate_secret|
+        digest = OpenSSL::HMAC.digest("SHA256", candidate_secret, signed_payload)
+        hexdigest = OpenSSL::HMAC.hexdigest("SHA256", candidate_secret, signed_payload)
+        base64 = Base64.strict_encode64(digest)
+        urlsafe_base64 = Base64.urlsafe_encode64(digest, padding: false)
 
-      [hexdigest, base64, urlsafe_base64]
+        [hexdigest, base64, urlsafe_base64]
+      end.uniq
     end
 
     def provided_signatures
@@ -71,19 +73,41 @@ module DiscourseDodoSubscriptions
       end
     end
 
-    def secret_bytes
-      return secret unless secret.start_with?("whsec_")
+    def secret_candidates
+      candidates = [secret]
+      decoded_secret = decode_standard_webhook_secret
+      candidates.unshift(decoded_secret) if decoded_secret&.bytesize&.positive?
+
+      candidates.uniq
+    end
+
+    def decode_standard_webhook_secret
+      return unless secret.start_with?("whsec_")
 
       encoded = secret.delete_prefix("whsec_")
-      begin
-        Base64.urlsafe_decode64(encoded)
-      rescue ArgumentError
-        begin
-          Base64.decode64(encoded)
-        rescue ArgumentError
-          secret
-        end
+      padded = encoded.ljust((encoded.length + 3) / 4 * 4, "=")
+
+      [encoded, padded].each do |value|
+        decoded = decode_base64_secret(value)
+        return decoded if decoded.present?
       end
+
+      nil
+    end
+
+    def decode_base64_secret(value)
+      [
+        -> { Base64.urlsafe_decode64(value) },
+        -> { Base64.strict_decode64(value) },
+        -> { Base64.decode64(value) },
+      ].each do |decoder|
+        decoded = decoder.call
+        return decoded if decoded.bytesize.positive?
+      rescue ArgumentError
+        next
+      end
+
+      nil
     end
 
     def secure_match?(candidate, provided)

@@ -24,6 +24,35 @@ RSpec.describe DiscourseDodoSubscriptions::WebhookVerifier do
     }.not_to raise_error
   end
 
+  it "accepts a valid Standard Webhooks signature with a whsec secret" do
+    decoded_secret = "decoded-secret"
+    webhook_secret = "whsec_#{Base64.urlsafe_encode64(decoded_secret, padding: false)}"
+
+    expect {
+      described_class.verify!(
+        payload: payload,
+        webhook_id: webhook_id,
+        timestamp: timestamp,
+        signature: "v1,#{signature_for(decoded_secret)}",
+        secret: webhook_secret,
+      )
+    }.not_to raise_error
+  end
+
+  it "accepts a whsec secret as a raw fallback" do
+    webhook_secret = "whsec_not_base64"
+
+    expect {
+      described_class.verify!(
+        payload: payload,
+        webhook_id: webhook_id,
+        timestamp: timestamp,
+        signature: "v1,#{signature_for(webhook_secret)}",
+        secret: webhook_secret,
+      )
+    }.not_to raise_error
+  end
+
   it "rejects an invalid signature" do
     expect {
       described_class.verify!(

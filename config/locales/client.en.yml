@@ -17,12 +17,13 @@ en:
       admin_navigation: Dodo Subscriptions
       navigation:
         subscribe: Subscribe
+        subscriptions: Subscriptions
       user:
         navigation:
           subscriptions: My subscriptions
           subscribe: Subscribe
         subscriptions:
-          title: My Dodo subscriptions
+          title: My subscriptions
           id: Subscription ID
           product: Product
           rate: Rate
@@ -30,7 +31,7 @@ en:
           current_period_end: Current period end
           cancel_at_period_end: Cancels at period end
           created_at: Created
-          empty: No Dodo subscriptions are recorded yet. This page updates after Dodo Payments confirms a subscription webhook.
+          empty: No subscriptions are recorded yet. This page updates after the subscription is confirmed.
           subscribe: Subscribe
       intervals:
         month: Monthly
@@ -48,7 +49,7 @@ en:
         monthly_equivalent: "%{amount} / month"
         save_percent: "Save %{percent}%"
         success_title: Checkout received
-        success_body: Your access will update as soon as Dodo Payments confirms the subscription.
+        success_body: Your access will update as soon as the subscription is confirmed.
         view_subscriptions: View my subscriptions
       admin:
         products:

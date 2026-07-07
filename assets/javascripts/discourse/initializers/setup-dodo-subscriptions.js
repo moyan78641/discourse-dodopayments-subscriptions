@@ -14,6 +14,17 @@ export default {
           href: "/subscribe",
         });
       }
+
+      const user = api.getCurrentUser();
+      if (user) {
+        api.addQuickAccessProfileItem({
+          icon: "credit-card",
+          href: `/u/${user.username}/billing/subscriptions`,
+          content: i18n(
+            "discourse_dodo_subscriptions.navigation.subscriptions"
+          ),
+        });
+      }
     });
   },
 };

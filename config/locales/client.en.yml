@@ -24,15 +24,33 @@ en:
           subscribe: Subscribe
         subscriptions:
           title: My subscriptions
+          summary: Review your current subscription status, renewal date, and access.
           id: Subscription ID
+          plan: Current plan
           product: Product
+          price: Price
           rate: Rate
           status: Status
-          current_period_end: Current period end
-          cancel_at_period_end: Cancels at period end
-          created_at: Created
+          current_period_end: Period end
+          renews_at: Renews on
+          expires_at: Expires on
+          started_at: Started
+          renewal: Renewal
+          renews_automatically: Renews automatically
+          expires_at_period_end: Ends after the current period
+          not_renewing: Does not renew
+          cancel_at_period_end: Ends at period end
+          created_at: Started
           empty: No subscriptions are recorded yet. This page updates after the subscription is confirmed.
           subscribe: Subscribe
+          statuses:
+            active: Active
+            renewed: Active
+            cancelled: Cancelled
+            failed: Payment failed
+            expired: Expired
+            on_hold: On hold
+            unknown: Unknown
       intervals:
         month: Monthly
         quarter: Quarterly

@@ -24,15 +24,33 @@ zh_CN:
           subscribe: 订阅
         subscriptions:
           title: 我的订阅
+          summary: 查看当前订阅状态、续费时间和访问权限。
           id: 订阅 ID
+          plan: 当前方案
           product: 商品
+          price: 价格
           rate: 价格
           status: 状态
-          current_period_end: 当前周期结束
-          cancel_at_period_end: 周期末取消
-          created_at: 创建时间
+          current_period_end: 周期结束
+          renews_at: 下次续费
+          expires_at: 到期时间
+          started_at: 开始时间
+          renewal: 续费状态
+          renews_automatically: 自动续费
+          expires_at_period_end: 当前周期结束后停止
+          not_renewing: 不会自动续费
+          cancel_at_period_end: 周期末结束
+          created_at: 开始时间
           empty: 当前没有订阅记录。支付完成后，订阅状态会自动更新。
           subscribe: 去订阅
+          statuses:
+            active: 有效
+            renewed: 有效
+            cancelled: 已取消
+            failed: 付款失败
+            expired: 已过期
+            on_hold: 暂停
+            unknown: 未知
       intervals:
         month: 每月
         quarter: 每季度

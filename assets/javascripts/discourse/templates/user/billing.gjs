@@ -1,32 +1,11 @@
-import { LinkTo } from "@ember/routing";
 import RouteTemplate from "ember-route-template";
-import MobileNav from "discourse/components/mobile-nav";
 import bodyClass from "discourse/helpers/body-class";
-import { i18n } from "discourse-i18n";
 
 export default RouteTemplate(
   <template>
     {{bodyClass "user-billing-page"}}
 
-    <section class="user-secondary-navigation">
-      <MobileNav
-        @desktopClass="action-list nav-stacked"
-        class="activity-nav"
-      >
-        <li>
-          <LinkTo @route="user.billing.subscriptions">
-            {{i18n "discourse_dodo_subscriptions.user.navigation.subscriptions"}}
-          </LinkTo>
-        </li>
-        <li>
-          <LinkTo @route="dodo-subscribe">
-            {{i18n "discourse_dodo_subscriptions.user.navigation.subscribe"}}
-          </LinkTo>
-        </li>
-      </MobileNav>
-    </section>
-
-    <section class="user-content" id="user-content">
+    <section class="user-content dodo-user-billing" id="user-content">
       {{outlet}}
     </section>
   </template>

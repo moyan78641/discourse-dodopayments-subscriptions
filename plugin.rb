@@ -27,8 +27,8 @@ module ::DiscourseDodoSubscriptions
 end
 
 require_relative "lib/discourse_dodo_subscriptions/engine"
-require_relative "app/controllers/concerns/dodo"
-require_relative "app/controllers/concerns/group"
+require_relative "app/controllers/concerns/discourse_dodo_subscriptions/dodo"
+require_relative "app/controllers/concerns/discourse_dodo_subscriptions/group"
 
 after_initialize do
   Discourse::Application.routes.append { mount DiscourseDodoSubscriptions::Engine, at: "subscribe" }

@@ -59,5 +59,23 @@ RSpec.describe DiscourseDodoSubscriptions::SubscribeController do
         "https://checkout.dodopayments.com/test",
       )
     end
+
+    it "returns an in-progress checkout instead of creating another one" do
+      DiscourseDodoSubscriptions::PendingCheckout.store_checkout_url(
+        user: user,
+        product: product,
+        url: "https://checkout.dodopayments.com/existing",
+      )
+      DiscourseDodoSubscriptions::Client.expects(:new).never
+
+      post "/subscribe/checkout.json",
+           params: {
+             product_id: product.external_id,
+           }
+
+      expect(response.parsed_body["checkout_url"]).to eq(
+        "https://checkout.dodopayments.com/existing",
+      )
+    end
   end
 end

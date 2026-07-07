@@ -41,6 +41,7 @@ zh_CN:
           not_renewing: 不会自动续费
           cancel_at_period_end: 周期末结束
           created_at: 开始时间
+          duplicate_notice: 检测到另外 %{count} 份同商品订阅。这里仅展示当前主订阅；如属重复测试或误购，请在支付后台取消多余订阅。
           empty: 当前没有订阅记录。支付完成后，订阅状态会自动更新。
           subscribe: 去订阅
           statuses:
@@ -64,6 +65,7 @@ zh_CN:
         checkout: 前往结账
         checkout_loading: 正在创建结账...
         checkout_error: 无法创建结账。
+        pending_checkout: 已有一个结账正在进行，请先完成或稍后再试。
         monthly_equivalent: "约 %{amount} / 月"
         save_percent: "省 %{percent}%"
         success_title: 已收到结账结果

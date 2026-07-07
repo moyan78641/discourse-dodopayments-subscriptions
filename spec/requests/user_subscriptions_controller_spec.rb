@@ -56,5 +56,26 @@ RSpec.describe DiscourseDodoSubscriptions::User::SubscriptionsController do
         ),
       )
     end
+
+    it "shows one primary subscription per non-repurchaseable product" do
+      customer = DiscourseDodoSubscriptions::Customer.find_by(user_id: user.id)
+      Fabricate(
+        :dodo_subscription,
+        customer: customer,
+        product: product,
+        external_id: "sub_duplicate",
+        current_period_end: 2.months.from_now,
+      )
+
+      get "/subscribe/user/subscriptions.json"
+
+      expect(response.status).to eq(200)
+      expect(response.parsed_body).to contain_exactly(
+        include(
+          "id" => "sub_duplicate",
+          "duplicate_subscription_count" => 1,
+        ),
+      )
+    end
   end
 end

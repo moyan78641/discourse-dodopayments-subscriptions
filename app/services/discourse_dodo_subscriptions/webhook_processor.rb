@@ -40,6 +40,7 @@ module DiscourseDodoSubscriptions
       customer = upsert_customer!(user)
       previous_product = existing_subscription&.product
       subscription = upsert_subscription!(customer, product)
+      PendingCheckout.clear(user: user, product: product)
 
       if grant_event?
         if previous_product && previous_product.id != product.id &&

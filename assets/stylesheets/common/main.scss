@@ -366,6 +366,15 @@
   }
 }
 
+.dodo-user-subscription__notice {
+  background: var(--highlight-low);
+  border-radius: 6px;
+  color: var(--primary-high);
+  font-size: var(--font-down-1);
+  margin: 0.75rem 0 0;
+  padding: 0.65rem 0.75rem;
+}
+
 .dodo-user-subscriptions__empty {
   max-width: 36rem;
 

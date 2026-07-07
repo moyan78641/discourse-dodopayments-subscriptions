@@ -26,6 +26,11 @@ export default class DodoSubscribeShowController extends Controller {
       .then((result) => {
         if (result.subscribed) {
           this.router.transitionTo("dodo-subscribe.success");
+        } else if (result.pending) {
+          this.dialog.alert(
+            i18n("discourse_dodo_subscriptions.subscribe.pending_checkout")
+          );
+          this.set("loading", false);
         } else if (result.checkout_url) {
           window.location.href = result.checkout_url;
         } else {

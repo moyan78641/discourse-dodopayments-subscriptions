@@ -123,6 +123,21 @@ export default class UserDodoSubscription extends EmberObject {
     return i18n("discourse_dodo_subscriptions.user.subscriptions.not_renewing");
   }
 
+  get hasDuplicateSubscriptions() {
+    return Number(this.duplicate_subscription_count) > 0;
+  }
+
+  get duplicateSubscriptionNotice() {
+    if (!this.hasDuplicateSubscriptions) {
+      return null;
+    }
+
+    return i18n(
+      "discourse_dodo_subscriptions.user.subscriptions.duplicate_notice",
+      { count: this.duplicate_subscription_count }
+    );
+  }
+
   formatDate(value) {
     if (!value) {
       return i18n("no_value");

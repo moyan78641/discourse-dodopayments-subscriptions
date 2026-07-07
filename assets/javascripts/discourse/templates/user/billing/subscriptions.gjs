@@ -48,6 +48,12 @@ export default RouteTemplate(
                 <span>{{i18n "discourse_dodo_subscriptions.user.subscriptions.id"}}</span>
                 <code>{{subscription.id}}</code>
               </div>
+
+              {{#if subscription.hasDuplicateSubscriptions}}
+                <p class="dodo-user-subscription__notice">
+                  {{subscription.duplicateSubscriptionNotice}}
+                </p>
+              {{/if}}
             </article>
           {{/each}}
         </div>

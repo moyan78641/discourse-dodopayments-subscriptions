@@ -36,6 +36,19 @@ module DiscourseDodoSubscriptions
         return render_json_dump subscribed: true
       end
 
+      unless product.repurchaseable
+        pending_checkout_url =
+          DiscourseDodoSubscriptions::PendingCheckout.checkout_url(
+            user: current_user,
+            product: product,
+          )
+        return render_json_dump checkout_url: pending_checkout_url if pending_checkout_url.present?
+
+        unless DiscourseDodoSubscriptions::PendingCheckout.reserve(user: current_user, product: product)
+          return render_json_dump pending: true
+        end
+      end
+
       checkout =
         dodo_client.create_checkout(
           product: product,
@@ -47,8 +60,15 @@ module DiscourseDodoSubscriptions
       url = checkout_url(checkout)
       raise DiscourseDodoSubscriptions::Client::Error.new("Missing checkout_url") if url.blank?
 
+      DiscourseDodoSubscriptions::PendingCheckout.store_checkout_url(
+        user: current_user,
+        product: product,
+        url: url,
+      ) unless product.repurchaseable
+
       render_json_dump checkout_url: url
     rescue DiscourseDodoSubscriptions::Client::Error => e
+      DiscourseDodoSubscriptions::PendingCheckout.clear(user: current_user, product: product) if product
       Rails.logger.warn("Dodo checkout failed: #{e.message} #{e.body}") if verbose_logging?
       render_json_error I18n.t("discourse_dodo_subscriptions.checkout_failed")
     end

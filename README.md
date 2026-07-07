@@ -14,6 +14,23 @@ Sell Dodo Payments subscriptions that grant access to Discourse groups.
 - `discourse_dodo_subscriptions_api_key`
 - `discourse_dodo_subscriptions_webhook_secret`
 - `discourse_dodo_subscriptions_environment`, either `test` or `live`
+- `discourse_dodo_subscriptions_base_url`, usually leave blank. The plugin automatically uses the Dodo Payments test or live API URL based on the selected environment.
+
+## Product configuration
+
+Create one row per Dodo Payments product at:
+
+`/admin/plugins/discourse-dodo-subscriptions/products`
+
+The `Dodo product ID` field is the product id from Dodo Payments. The `Discourse group name` field is the local Discourse group granted when a matching subscription webhook is received.
+
+Do not put a product id in `discourse_dodo_subscriptions_base_url`; that setting is only for overriding the Dodo Payments API host.
+
+## Dodo webhook URL
+
+Configure this endpoint in Dodo Payments:
+
+`https://your-discourse-host/subscribe/webhooks/dodo`
 
 ## Docker Install
 

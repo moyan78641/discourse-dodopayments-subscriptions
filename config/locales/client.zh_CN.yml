@@ -1,0 +1,44 @@
+zh_CN:
+  admin_js:
+    admin:
+      site_settings:
+        categories:
+          discourse_dodo_subscriptions: "Dodo Payments 订阅"
+  site_settings:
+    discourse_dodo_subscriptions_enabled: 启用 Dodo Payments 订阅。
+    discourse_dodo_subscriptions_extra_nav_subscribe: 在主导航中显示“订阅”链接。
+    discourse_dodo_subscriptions_api_key: 当前 test/live 环境对应的 Dodo Payments API Key。
+    discourse_dodo_subscriptions_webhook_secret: Dodo Payments Webhook 签名密钥，用于校验发到本站的 Webhook。
+    discourse_dodo_subscriptions_environment: Dodo Payments 环境。测试 API Key 用 test，正式 API Key 用 live。
+    discourse_dodo_subscriptions_base_url: 覆盖 Dodo Payments API 基础 URL。通常留空，会根据 test/live 自动选择；这里不是商品 ID。
+    discourse_dodo_subscriptions_enable_verbose_logging: 启用更详细的 Dodo Payments 订阅日志，用于调试。
+  js:
+    discourse_dodo_subscriptions:
+      admin_navigation: Dodo 订阅
+      navigation:
+        subscribe: 订阅
+      subscribe:
+        title: 订阅
+        no_products: 当前没有可用订阅。
+        login_required: 登录或创建账号后即可订阅。
+        already_subscribed: 你已经订阅。
+        checkout: 前往结账
+        checkout_loading: 正在创建结账...
+        checkout_error: 无法创建结账。
+        success_title: 已收到结账结果
+        success_body: Dodo Payments 确认订阅后，你的访问权限会自动更新。
+      admin:
+        products:
+          title: Dodo 订阅商品
+          add: 添加商品
+          save: 保存商品
+          delete: 删除
+          external_id: Dodo 商品 ID
+          name: 展示名称
+          group_name: Discourse 用户组名称
+          amount_cents: 金额，单位为分
+          currency: 货币
+          recurring_interval: 计费周期
+          description: 描述
+          active: 启用
+          repurchaseable: 可重复购买

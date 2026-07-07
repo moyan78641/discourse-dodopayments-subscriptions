@@ -1,4 +1,17 @@
 en:
+  admin_js:
+    admin:
+      site_settings:
+        categories:
+          discourse_dodo_subscriptions: "Dodo Payments Subscriptions"
+  site_settings:
+    discourse_dodo_subscriptions_enabled: Enable Dodo Payments subscriptions.
+    discourse_dodo_subscriptions_extra_nav_subscribe: Show a Subscribe link in the main navigation.
+    discourse_dodo_subscriptions_api_key: Dodo Payments API key for the selected test/live environment.
+    discourse_dodo_subscriptions_webhook_secret: Dodo Payments webhook signing secret for this Discourse webhook endpoint.
+    discourse_dodo_subscriptions_environment: Dodo Payments environment. Use test with Dodo test API keys and live with live keys.
+    discourse_dodo_subscriptions_base_url: Override the Dodo Payments API base URL. Leave blank to use test/live automatically; this is not a product ID.
+    discourse_dodo_subscriptions_enable_verbose_logging: Enable verbose Dodo Payments subscription logging for debugging.
   js:
     discourse_dodo_subscriptions:
       admin_navigation: Dodo Subscriptions
@@ -20,3 +33,12 @@ en:
           add: Add product
           save: Save product
           delete: Delete
+          external_id: Dodo product ID
+          name: Display name
+          group_name: Discourse group name
+          amount_cents: Amount in cents
+          currency: Currency
+          recurring_interval: Billing interval
+          description: Description
+          active: Active
+          repurchaseable: Repurchaseable

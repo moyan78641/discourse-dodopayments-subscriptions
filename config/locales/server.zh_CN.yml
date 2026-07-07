@@ -1,0 +1,18 @@
+zh_CN:
+  site_settings:
+    discourse_dodo_subscriptions_enabled: 启用 Dodo Payments 订阅。
+    discourse_dodo_subscriptions_extra_nav_subscribe: 在主导航中显示“订阅”链接。
+    discourse_dodo_subscriptions_api_key: 当前 test/live 环境对应的 Dodo Payments API Key。
+    discourse_dodo_subscriptions_webhook_secret: Dodo Payments Webhook 签名密钥。
+    discourse_dodo_subscriptions_environment: Dodo Payments 环境。测试 API Key 用 test，正式 API Key 用 live。
+    discourse_dodo_subscriptions_base_url: 覆盖 Dodo Payments API 基础 URL。通常留空，会根据 test/live 自动选择；这里不是商品 ID。
+    discourse_dodo_subscriptions_enable_verbose_logging: 启用更详细的 Dodo Payments 订阅日志。
+  discourse_dodo_subscriptions:
+    dodo_not_configured: Dodo Payments 尚未配置。
+    checkout_failed: 无法创建结账。
+    product_not_found: 未找到商品。
+    webhook_invalid_signature: Dodo Payments Webhook 签名无效。
+    webhook_missing_headers: 缺少 Dodo Payments Webhook 请求头。
+    webhook_missing_user: Webhook 无法匹配到 Discourse 用户。
+    webhook_email_mismatch: Webhook 客户邮箱不属于匹配到的 Discourse 用户。
+    webhook_product_not_found: Webhook 对应的商品未在 Discourse 中发布。

@@ -1,4 +1,5 @@
 import { Input, Textarea } from "@ember/component";
+import { fn } from "@ember/helper";
 import RouteTemplate from "ember-route-template";
 import DButton from "discourse/ui-kit/d-button";
 import { i18n } from "discourse-i18n";
@@ -20,47 +21,47 @@ export default RouteTemplate(
         <form class="dodo-admin-products__row">
           <Input
             @value={{product.external_id}}
-            placeholder="Dodo product id"
+            placeholder={{i18n "discourse_dodo_subscriptions.admin.products.external_id"}}
             class="dodo-admin-products__input"
           />
           <Input
             @value={{product.name}}
-            placeholder="Name"
+            placeholder={{i18n "discourse_dodo_subscriptions.admin.products.name"}}
             class="dodo-admin-products__input"
           />
           <Input
             @value={{product.group_name}}
-            placeholder="Discourse group name"
+            placeholder={{i18n "discourse_dodo_subscriptions.admin.products.group_name"}}
             class="dodo-admin-products__input"
           />
           <Input
             @value={{product.amount_cents}}
-            placeholder="Amount cents"
+            placeholder={{i18n "discourse_dodo_subscriptions.admin.products.amount_cents"}}
             class="dodo-admin-products__input"
           />
           <Input
             @value={{product.currency}}
-            placeholder="Currency"
+            placeholder={{i18n "discourse_dodo_subscriptions.admin.products.currency"}}
             class="dodo-admin-products__input"
           />
           <Input
             @value={{product.recurring_interval}}
-            placeholder="Interval"
+            placeholder={{i18n "discourse_dodo_subscriptions.admin.products.recurring_interval"}}
             class="dodo-admin-products__input"
           />
           <Textarea
             @value={{product.description}}
-            placeholder="Description"
+            placeholder={{i18n "discourse_dodo_subscriptions.admin.products.description"}}
             class="dodo-admin-products__description"
           />
 
           <label class="dodo-admin-products__checkbox">
             <Input @type="checkbox" @checked={{product.active}} />
-            Active
+            {{i18n "discourse_dodo_subscriptions.admin.products.active"}}
           </label>
           <label class="dodo-admin-products__checkbox">
             <Input @type="checkbox" @checked={{product.repurchaseable}} />
-            Repurchaseable
+            {{i18n "discourse_dodo_subscriptions.admin.products.repurchaseable"}}
           </label>
 
           <div class="dodo-admin-products__actions">

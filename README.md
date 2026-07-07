@@ -26,6 +26,10 @@ The `Dodo product ID` field is the product id from Dodo Payments. The `Discourse
 
 Do not put a product id in `discourse_dodo_subscriptions_base_url`; that setting is only for overriding the Dodo Payments API host.
 
+The amount, currency, and billing interval fields are display fields for the Discourse subscription page. Dodo Payments still controls the real checkout price and billing cycle for each product ID.
+
+To offer monthly, quarterly, half-yearly, and yearly options, create one Dodo product for each option, then add one row per product ID in Discourse with the same display name. The subscription page groups rows with the same display name into one pricing card and shows interval choices. If the longer interval is cheaper than the monthly equivalent, the page shows the calculated discount automatically.
+
 ## Dodo webhook URL
 
 Configure this endpoint in Dodo Payments:

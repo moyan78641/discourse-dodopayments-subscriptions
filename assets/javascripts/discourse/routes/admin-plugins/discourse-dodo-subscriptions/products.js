@@ -5,4 +5,9 @@ export default class AdminPluginsDiscourseDodoSubscriptionsProductsRoute extends
   model() {
     return AdminDodoProduct.findAll();
   }
+
+  setupController(controller, model) {
+    super.setupController(controller, model);
+    controller.loadGroups();
+  }
 }

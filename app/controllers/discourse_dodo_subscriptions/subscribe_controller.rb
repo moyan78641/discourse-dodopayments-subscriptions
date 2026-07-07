@@ -41,7 +41,7 @@ module DiscourseDodoSubscriptions
           product: product,
           user: current_user,
           return_url: "#{Discourse.base_url}/subscribe/success",
-          cancel_url: "#{Discourse.base_url}/subscribe/#{product.external_id}",
+          cancel_url: "#{Discourse.base_url}/subscribe",
         )
 
       url = checkout_url(checkout)

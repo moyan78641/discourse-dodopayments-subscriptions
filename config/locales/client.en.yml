@@ -17,6 +17,11 @@ en:
       admin_navigation: Dodo Subscriptions
       navigation:
         subscribe: Subscribe
+      intervals:
+        month: Monthly
+        quarter: Quarterly
+        half_year: Every 6 months
+        year: Yearly
       subscribe:
         title: Subscribe
         no_products: No subscriptions are available right now.
@@ -25,20 +30,25 @@ en:
         checkout: Continue to checkout
         checkout_loading: Creating checkout...
         checkout_error: Unable to create checkout.
+        monthly_equivalent: "%{amount} / month"
+        save_percent: "Save %{percent}%"
         success_title: Checkout received
         success_body: Your access will update as soon as Dodo Payments confirms the subscription.
       admin:
         products:
           title: Dodo Subscription Products
+          help: Create one row per Dodo Payments product ID. Amount, currency, and interval are display fields; Dodo still controls the real checkout price and billing cycle.
           add: Add product
           save: Save product
           delete: Delete
           external_id: Dodo product ID
           name: Display name
           group_name: Discourse group name
-          amount_cents: Amount in cents
+          amount: Display amount
+          amount_cents: Internal display amount value
           currency: Currency
           recurring_interval: Billing interval
           description: Description
           active: Active
           repurchaseable: Repurchaseable
+          delete_confirm: Delete this Dodo subscription product?

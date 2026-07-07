@@ -1,4 +1,4 @@
-import EmberObject from "@ember/object";
+import EmberObject, { computed } from "@ember/object";
 import { ajax } from "discourse/lib/ajax";
 
 export default class AdminDodoProduct extends EmberObject {
@@ -15,6 +15,37 @@ export default class AdminDodoProduct extends EmberObject {
       currency: "USD",
       recurring_interval: "month",
     });
+  }
+
+  @computed("amount_cents")
+  get amount() {
+    if (this.amount_cents === null || this.amount_cents === undefined) {
+      return "";
+    }
+
+    return (Number(this.amount_cents) / 100).toFixed(2);
+  }
+
+  set amount(value) {
+    const normalized = value?.toString().trim();
+
+    if (!normalized) {
+      this.set("amount_cents", null);
+      return "";
+    }
+
+    const amount = Number.parseFloat(normalized.replace(",", "."));
+
+    if (!Number.isNaN(amount)) {
+      this.set("amount_cents", Math.round(amount * 100));
+    }
+
+    return value;
+  }
+
+  @computed("group_name")
+  get groupNames() {
+    return this.group_name ? [this.group_name] : [];
   }
 
   save() {

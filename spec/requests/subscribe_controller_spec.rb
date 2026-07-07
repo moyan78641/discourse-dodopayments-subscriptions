@@ -8,11 +8,24 @@ RSpec.describe DiscourseDodoSubscriptions::SubscribeController do
 
   describe "#index" do
     it "lists published products" do
-      Fabricate(:dodo_product, external_id: "pdt_123", name: "Members")
+      Fabricate(
+        :dodo_product,
+        external_id: "pdt_123",
+        name: "Members",
+        amount_cents: 500,
+        currency: "USD",
+        recurring_interval: "month",
+      )
 
       get "/subscribe.json"
 
-      expect(response.parsed_body.first).to include("id" => "pdt_123", "name" => "Members")
+      expect(response.parsed_body.first).to include(
+        "id" => "pdt_123",
+        "name" => "Members",
+        "amount_cents" => 500,
+        "currency" => "USD",
+        "recurring_interval" => "month",
+      )
     end
   end
 
@@ -27,12 +40,24 @@ RSpec.describe DiscourseDodoSubscriptions::SubscribeController do
       DiscourseDodoSubscriptions::Client.expects(:new).returns(client)
       client
         .expects(:create_checkout)
-        .with(has_entries(product: product, user: user))
+        .with(
+          has_entries(
+            product: product,
+            user: user,
+            return_url: "#{Discourse.base_url}/subscribe/success",
+            cancel_url: "#{Discourse.base_url}/subscribe",
+          ),
+        )
         .returns(checkout_url: "https://checkout.dodopayments.com/test")
 
-      post "/subscribe/checkout.json", params: { product_id: product.external_id }
+      post "/subscribe/checkout.json",
+           params: {
+             product_id: product.external_id,
+           }
 
-      expect(response.parsed_body["checkout_url"]).to eq("https://checkout.dodopayments.com/test")
+      expect(response.parsed_body["checkout_url"]).to eq(
+        "https://checkout.dodopayments.com/test",
+      )
     end
   end
 end

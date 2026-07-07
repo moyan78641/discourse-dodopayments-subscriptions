@@ -17,6 +17,11 @@ zh_CN:
       admin_navigation: Dodo 订阅
       navigation:
         subscribe: 订阅
+      intervals:
+        month: 每月
+        quarter: 每季度
+        half_year: 每半年
+        year: 每年
       subscribe:
         title: 订阅
         no_products: 当前没有可用订阅。
@@ -25,20 +30,25 @@ zh_CN:
         checkout: 前往结账
         checkout_loading: 正在创建结账...
         checkout_error: 无法创建结账。
+        monthly_equivalent: "约 %{amount} / 月"
+        save_percent: "省 %{percent}%"
         success_title: 已收到结账结果
         success_body: Dodo Payments 确认订阅后，你的访问权限会自动更新。
       admin:
         products:
           title: Dodo 订阅商品
+          help: 每个 Dodo Payments 商品 ID 创建一行。金额、货币和周期只用于 Discourse 页面展示；真实扣款价格和计费周期仍以 Dodo 商品为准。
           add: 添加商品
           save: 保存商品
           delete: 删除
           external_id: Dodo 商品 ID
           name: 展示名称
           group_name: Discourse 用户组名称
-          amount_cents: 金额，单位为分
+          amount: 展示金额
+          amount_cents: 展示金额内部值
           currency: 货币
           recurring_interval: 计费周期
           description: 描述
           active: 启用
           repurchaseable: 可重复购买
+          delete_confirm: 确定删除这个 Dodo 订阅商品吗？

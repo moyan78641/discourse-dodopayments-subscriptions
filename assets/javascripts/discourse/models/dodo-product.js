@@ -15,21 +15,29 @@ export default class DodoProduct extends EmberObject {
   }
 
   checkout() {
-    return ajax("/subscribe/checkout", {
+    return ajax("/subscribe/checkout.json", {
       method: "post",
       data: { product_id: this.id },
     });
   }
 
-  get amountLabel() {
-    if (!this.currency || !this.amount_cents) {
+  formatAmount(amountCents) {
+    if (!this.currency || amountCents === null || amountCents === undefined) {
       return null;
     }
 
-    const amount = this.amount_cents / 100;
+    const amount = amountCents / 100;
     return new Intl.NumberFormat(undefined, {
       style: "currency",
       currency: this.currency,
     }).format(amount);
+  }
+
+  get amountLabel() {
+    if (!this.currency || this.amount_cents === null || this.amount_cents === undefined) {
+      return null;
+    }
+
+    return this.formatAmount(this.amount_cents);
   }
 }

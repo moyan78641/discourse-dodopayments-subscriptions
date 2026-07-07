@@ -251,6 +251,49 @@
   justify-content: end;
 }
 
+.dodo-user-subscriptions {
+  h2 {
+    margin-top: 0;
+  }
+}
+
+.dodo-user-subscriptions__table-wrap {
+  overflow-x: auto;
+}
+
+.dodo-user-subscriptions__table {
+  min-width: 48rem;
+
+  th,
+  td {
+    vertical-align: middle;
+  }
+}
+
+.dodo-user-subscriptions__status {
+  background: var(--primary-very-low);
+  border-radius: 4px;
+  color: var(--primary-high);
+  display: inline-block;
+  font-weight: 700;
+  padding: 0.2rem 0.45rem;
+}
+
+.dodo-user-subscriptions__empty {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 36rem;
+
+  p {
+    margin: 0;
+  }
+
+  .btn {
+    align-self: flex-start;
+  }
+}
+
 @media screen and (width <= 900px) {
   .dodo-admin-products__row {
     grid-template-columns: repeat(2, minmax(0, 1fr));

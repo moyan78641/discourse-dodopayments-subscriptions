@@ -17,6 +17,21 @@ zh_CN:
       admin_navigation: Dodo 订阅
       navigation:
         subscribe: 订阅
+      user:
+        navigation:
+          subscriptions: 我的订阅
+          subscribe: 订阅
+        subscriptions:
+          title: 我的 Dodo 订阅
+          id: 订阅 ID
+          product: 商品
+          rate: 价格
+          status: 状态
+          current_period_end: 当前周期结束
+          cancel_at_period_end: 周期末取消
+          created_at: 创建时间
+          empty: 当前没有 Dodo 订阅记录。支付完成后，Dodo Payments webhook 确认订阅时这里会更新。
+          subscribe: 去订阅
       intervals:
         month: 每月
         quarter: 每季度
@@ -34,6 +49,7 @@ zh_CN:
         save_percent: "省 %{percent}%"
         success_title: 已收到结账结果
         success_body: Dodo Payments 确认订阅后，你的访问权限会自动更新。
+        view_subscriptions: 查看我的订阅
       admin:
         products:
           title: Dodo 订阅商品

@@ -18,6 +18,14 @@ Discourse::Application.routes.append do
       constraints: AdminConstraint.new
   get "/admin/plugins/discourse-dodo-subscriptions/products" => "admin/plugins#index",
       constraints: AdminConstraint.new
+  get "/u/:username/billing" => "users#show",
+      constraints: {
+        username: USERNAME_ROUTE_FORMAT,
+      }
+  get "/u/:username/billing/subscriptions" => "users#show",
+      constraints: {
+        username: USERNAME_ROUTE_FORMAT,
+      }
 end
 
 module ::DiscourseDodoSubscriptions

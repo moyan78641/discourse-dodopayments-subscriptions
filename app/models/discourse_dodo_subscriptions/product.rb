@@ -16,7 +16,12 @@ module DiscourseDodoSubscriptions
 
       Subscription
         .joins(:customer)
-        .where(product_id: id, customer: { user_id: user.id })
+        .where(
+          product_id: id,
+          Customer.table_name => {
+            user_id: user.id,
+          },
+        )
         .where(status: Subscription::GRANTING_STATUSES)
         .exists?
     end

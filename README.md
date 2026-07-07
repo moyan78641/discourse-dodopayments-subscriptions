@@ -5,6 +5,7 @@ Sell Dodo Payments subscriptions that grant access to Discourse groups.
 ## Routes
 
 - Public subscription page: `/subscribe`
+- User subscription status page: `/u/:username/billing/subscriptions`
 - Dodo webhook endpoint: `/subscribe/webhooks/dodo`
 - Admin product configuration: `/admin/plugins/discourse-dodo-subscriptions/products`
 
@@ -29,6 +30,8 @@ Do not put a product id in `discourse_dodo_subscriptions_base_url`; that setting
 The amount, currency, and billing interval fields are display fields for the Discourse subscription page. Dodo Payments still controls the real checkout price and billing cycle for each product ID.
 
 To offer monthly, quarterly, half-yearly, and yearly options, create one Dodo product for each option, then add one row per product ID in Discourse with the same display name. The subscription page groups rows with the same display name into one pricing card and shows interval choices. If the longer interval is cheaper than the monthly equivalent, the page shows the calculated discount automatically.
+
+After checkout, Dodo Payments webhooks update the local subscription record and group access. Users can view their recorded Dodo subscription status at `/u/:username/billing/subscriptions`.
 
 ## Dodo webhook URL
 

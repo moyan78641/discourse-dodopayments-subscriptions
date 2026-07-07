@@ -5,6 +5,10 @@ DiscourseDodoSubscriptions::Engine.routes.draw do
     resources :products
   end
 
+  namespace :user do
+    resources :subscriptions, only: %i[index]
+  end
+
   get "/" => "subscribe#index"
   get ".json" => "subscribe#index"
   get "/success" => "subscribe#success"

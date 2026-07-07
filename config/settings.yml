@@ -1,0 +1,25 @@
+discourse_dodo_subscriptions:
+  discourse_dodo_subscriptions_enabled:
+    default: false
+  discourse_dodo_subscriptions_extra_nav_subscribe:
+    default: false
+    client: true
+  discourse_dodo_subscriptions_api_key:
+    default: ""
+    client: false
+    secret: true
+  discourse_dodo_subscriptions_webhook_secret:
+    default: ""
+    client: false
+    secret: true
+  discourse_dodo_subscriptions_environment:
+    default: "test"
+    type: enum
+    choices:
+      - test
+      - live
+  discourse_dodo_subscriptions_base_url:
+    default: ""
+    client: false
+  discourse_dodo_subscriptions_enable_verbose_logging:
+    default: false

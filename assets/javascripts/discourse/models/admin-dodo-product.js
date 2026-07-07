@@ -1,0 +1,51 @@
+import EmberObject from "@ember/object";
+import { ajax } from "discourse/lib/ajax";
+
+export default class AdminDodoProduct extends EmberObject {
+  static findAll() {
+    return ajax("/subscribe/admin/products", { method: "get" }).then(
+      (products) => products.map((product) => AdminDodoProduct.create(product))
+    );
+  }
+
+  static createEmpty() {
+    return AdminDodoProduct.create({
+      active: true,
+      repurchaseable: false,
+      currency: "USD",
+      recurring_interval: "month",
+    });
+  }
+
+  save() {
+    const data = this.payload;
+    const id = this.id;
+
+    if (id) {
+      return ajax(`/subscribe/admin/products/${id}`, {
+        method: "patch",
+        data,
+      });
+    }
+
+    return ajax("/subscribe/admin/products", { method: "post", data });
+  }
+
+  destroyRecord() {
+    return ajax(`/subscribe/admin/products/${this.id}`, { method: "delete" });
+  }
+
+  get payload() {
+    return {
+      external_id: this.external_id,
+      name: this.name,
+      description: this.description,
+      group_name: this.group_name,
+      active: this.active,
+      repurchaseable: this.repurchaseable,
+      amount_cents: this.amount_cents,
+      currency: this.currency,
+      recurring_interval: this.recurring_interval,
+    };
+  }
+}

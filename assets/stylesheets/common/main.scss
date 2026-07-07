@@ -1,0 +1,68 @@
+.dodo-subscriptions {
+  padding-block: 1.5rem;
+}
+
+.dodo-subscriptions__header {
+  margin-bottom: 1.5rem;
+}
+
+.dodo-product-list {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+}
+
+.dodo-product-list__item,
+.dodo-product,
+.dodo-subscriptions__success,
+.dodo-admin-products__row {
+  border: 1px solid var(--primary-low);
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+.dodo-product {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: minmax(0, 1fr) minmax(14rem, 18rem);
+}
+
+.dodo-product__price,
+.dodo-product-list__price {
+  color: var(--primary-high);
+  font-size: var(--font-up-2);
+  font-weight: 700;
+}
+
+.dodo-product__checkout {
+  align-self: start;
+}
+
+@media screen and (width <= 700px) {
+  .dodo-product {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dodo-admin-products__header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.dodo-admin-products__row {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  margin-bottom: 1rem;
+}
+
+.dodo-admin-products__description {
+  min-height: 6rem;
+}
+
+.dodo-admin-products__actions {
+  display: flex;
+  gap: 0.5rem;
+}

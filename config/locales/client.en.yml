@@ -1,0 +1,22 @@
+en:
+  js:
+    discourse_dodo_subscriptions:
+      admin_navigation: Dodo Subscriptions
+      navigation:
+        subscribe: Subscribe
+      subscribe:
+        title: Subscribe
+        no_products: No subscriptions are available right now.
+        login_required: Log in or create an account to subscribe.
+        already_subscribed: You are subscribed.
+        checkout: Continue to checkout
+        checkout_loading: Creating checkout...
+        checkout_error: Unable to create checkout.
+        success_title: Checkout received
+        success_body: Your access will update as soon as Dodo Payments confirms the subscription.
+      admin:
+        products:
+          title: Dodo Subscription Products
+          add: Add product
+          save: Save product
+          delete: Delete

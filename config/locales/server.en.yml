@@ -1,0 +1,18 @@
+en:
+  site_settings:
+    discourse_dodo_subscriptions_enabled: Enable Dodo Payments subscriptions.
+    discourse_dodo_subscriptions_extra_nav_subscribe: Show a Subscribe link in the main navigation.
+    discourse_dodo_subscriptions_api_key: Dodo Payments API key.
+    discourse_dodo_subscriptions_webhook_secret: Dodo Payments webhook signing secret.
+    discourse_dodo_subscriptions_environment: Dodo Payments environment.
+    discourse_dodo_subscriptions_base_url: Override Dodo Payments API base URL. Leave blank to use the selected environment.
+    discourse_dodo_subscriptions_enable_verbose_logging: Enable verbose Dodo Payments subscription logging.
+  discourse_dodo_subscriptions:
+    dodo_not_configured: Dodo Payments is not configured.
+    checkout_failed: Unable to create checkout.
+    product_not_found: Product not found.
+    webhook_invalid_signature: Invalid Dodo Payments webhook signature.
+    webhook_missing_headers: Missing Dodo Payments webhook headers.
+    webhook_missing_user: Webhook could not be matched to a Discourse user.
+    webhook_email_mismatch: Webhook customer email does not belong to the matched Discourse user.
+    webhook_product_not_found: Webhook product is not published in Discourse.

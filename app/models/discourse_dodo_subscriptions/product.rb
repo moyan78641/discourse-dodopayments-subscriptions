@@ -90,7 +90,7 @@ module DiscourseDodoSubscriptions
     private
 
     def set_defaults
-      self.plan_key = name if plan_key.blank?
+      self.plan_key = group_name if plan_key.blank?
       self.recurring_interval = "month" if recurring_interval.blank?
     end
 

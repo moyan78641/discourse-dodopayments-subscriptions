@@ -30,41 +30,61 @@ export default class DodoSubscribeIndexController extends Controller {
 
   @tracked loadingProductId = null;
   @tracked selectedIntervals = {};
-  @tracked selectedBillingTypes = {};
+  @tracked selectedBillingType = null;
+
+  get availableBillingTypes() {
+    return [
+      ...new Set((this.model || []).map((product) => product.billing_type)),
+    ]
+      .filter(Boolean)
+      .sort(
+        (a, b) => (BILLING_TYPE_ORDER[a] || 99) - (BILLING_TYPE_ORDER[b] || 99),
+      );
+  }
+
+  get billingTypes() {
+    return this.availableBillingTypes.map((billingType) => ({
+      value: billingType,
+      selected: billingType === this.activeBillingType,
+      label: i18n(
+        `discourse_dodo_subscriptions.subscribe.billing_types.${billingType}`,
+      ),
+    }));
+  }
+
+  get hasMultipleBillingTypes() {
+    return this.billingTypes.length > 1;
+  }
+
+  get activeBillingType() {
+    const availableTypes = this.availableBillingTypes;
+    return availableTypes.includes(this.selectedBillingType)
+      ? this.selectedBillingType
+      : availableTypes[0] || "subscription";
+  }
 
   get productGroups() {
     const groups = new Map();
 
-    (this.model || []).forEach((product) => {
-      const key = product.plan_key || product.name || product.id;
-      if (!groups.has(key)) {
-        groups.set(key, []);
-      }
-      groups.get(key).push(product);
-    });
+    (this.model || [])
+      .filter((product) => product.billing_type === this.activeBillingType)
+      .forEach((product) => {
+        const key =
+          product.plan_key || product.group_name || product.name || product.id;
+        if (!groups.has(key)) {
+          groups.set(key, []);
+        }
+        groups.get(key).push(product);
+      });
 
     return Array.from(groups.entries()).map(([key, products]) => {
-      const billingTypes = [
-        ...new Set(products.map((item) => item.billing_type)),
-      ]
-        .filter(Boolean)
-        .sort(
-          (a, b) =>
-            (BILLING_TYPE_ORDER[a] || 99) - (BILLING_TYPE_ORDER[b] || 99),
-        );
-      const selectedBillingType =
-        this.selectedBillingTypes[key] || billingTypes[0] || "subscription";
-      const modeProducts = products
-        .filter((product) => product.billing_type === selectedBillingType)
-        .sort(
-          (a, b) =>
-            (INTERVAL_ORDER[a.recurring_interval] || 99) -
-            (INTERVAL_ORDER[b.recurring_interval] || 99),
-        );
-      const selectionKey = `${key}:${selectedBillingType}`;
+      const modeProducts = products.sort(
+        (a, b) =>
+          (INTERVAL_ORDER[a.recurring_interval] || 99) -
+          (INTERVAL_ORDER[b.recurring_interval] || 99),
+      );
       const selectedInterval =
-        this.selectedIntervals[selectionKey] ||
-        modeProducts[0]?.recurring_interval;
+        this.selectedIntervals[key] || modeProducts[0]?.recurring_interval;
       const selectedProduct =
         modeProducts.find(
           (product) => product.recurring_interval === selectedInterval,
@@ -76,18 +96,9 @@ export default class DodoSubscribeIndexController extends Controller {
 
       return {
         key,
-        name: selectedProduct?.name || products[0]?.name,
-        description: selectedProduct?.description || products[0]?.description,
-        selectedBillingType,
+        name: products[0]?.name || selectedProduct?.name,
+        description: products[0]?.description || selectedProduct?.description,
         selectedPlan,
-        hasMultipleBillingTypes: billingTypes.length > 1,
-        billingTypes: billingTypes.map((billingType) => ({
-          value: billingType,
-          selected: billingType === selectedBillingType,
-          label: i18n(
-            `discourse_dodo_subscriptions.subscribe.billing_types.${billingType}`,
-          ),
-        })),
         hasMultiplePlans: modeProducts.length > 1,
         plans: modeProducts.map((product) => {
           const plan = this.buildPlan(
@@ -167,18 +178,15 @@ export default class DodoSubscribeIndexController extends Controller {
   }
 
   @action
-  selectBillingType(groupKey, billingType) {
-    this.selectedBillingTypes = {
-      ...this.selectedBillingTypes,
-      [groupKey]: billingType,
-    };
+  selectBillingType(billingType) {
+    this.selectedBillingType = billingType;
   }
 
   @action
-  selectPlan(groupKey, billingType, interval) {
+  selectPlan(groupKey, interval) {
     this.selectedIntervals = {
       ...this.selectedIntervals,
-      [`${groupKey}:${billingType}`]: interval,
+      [groupKey]: interval,
     };
   }
 

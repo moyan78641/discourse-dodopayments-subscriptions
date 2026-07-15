@@ -8,5 +8,5 @@ export default RouteTemplate(
     <section class="user-content dodo-user-billing" id="user-content">
       {{outlet}}
     </section>
-  </template>
+  </template>,
 );

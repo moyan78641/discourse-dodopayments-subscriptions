@@ -14,5 +14,5 @@ export default RouteTemplate(
         class="btn-primary"
       />
     </section>
-  </template>
+  </template>,
 );

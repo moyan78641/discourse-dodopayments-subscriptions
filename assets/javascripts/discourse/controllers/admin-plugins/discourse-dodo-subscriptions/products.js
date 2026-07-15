@@ -77,7 +77,7 @@ export default class AdminPluginsDiscourseDodoSubscriptionsProductsController ex
 
   @action
   addProduct() {
-    this.model.pushObject(AdminDodoProduct.createEmpty());
+    this.set("model", [...this.model, AdminDodoProduct.createEmpty()]);
   }
 
   @action
@@ -123,7 +123,10 @@ export default class AdminPluginsDiscourseDodoSubscriptionsProductsController ex
   @action
   deleteProduct(product) {
     if (!product.id) {
-      this.model.removeObject(product);
+      this.set(
+        "model",
+        this.model.filter((item) => item !== product),
+      );
       return;
     }
 
@@ -134,7 +137,12 @@ export default class AdminPluginsDiscourseDodoSubscriptionsProductsController ex
       didConfirm: () => {
         product
           .destroyRecord()
-          .then(() => this.model.removeObject(product))
+          .then(() =>
+            this.set(
+              "model",
+              this.model.filter((item) => item !== product),
+            ),
+          )
           .catch(popupAjaxError);
       },
     });

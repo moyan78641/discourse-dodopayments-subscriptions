@@ -96,7 +96,10 @@ export default class AdminPluginsDiscourseDodoSubscriptionsOrdersController exte
       notify_user: this.notifyUser,
     })
       .then((result) => {
-        this.model.orders.unshiftObject(AdminDodoOrder.create(result));
+        this.set("model", {
+          ...this.model,
+          orders: [AdminDodoOrder.create(result), ...this.model.orders],
+        });
         this.setProperties({
           usernameOrEmail: "",
           durationDays: null,
@@ -118,9 +121,10 @@ export default class AdminPluginsDiscourseDodoSubscriptionsOrdersController exte
         notify_user: true,
       })
       .then((result) => {
-        if (result.id !== order.id) {
-          this.model.orders.unshiftObject(AdminDodoOrder.create(result));
-        }
+        this.set("model", {
+          ...this.model,
+          orders: [AdminDodoOrder.create(result), ...this.model.orders],
+        });
       })
       .catch(popupAjaxError);
   }
@@ -134,6 +138,7 @@ export default class AdminPluginsDiscourseDodoSubscriptionsOrdersController exte
         note: order.operationNote,
         notify_user: false,
       })
+      .then((result) => order.setProperties(result))
       .catch(popupAjaxError);
   }
 
@@ -148,6 +153,7 @@ export default class AdminPluginsDiscourseDodoSubscriptionsOrdersController exte
             note: order.operationNote,
             notify_user: false,
           })
+          .then((result) => order.setProperties(result))
           .catch(popupAjaxError),
     });
   }

@@ -137,6 +137,45 @@ RSpec.describe DiscourseDodoSubscriptions::WebhookProcessor do
     }.to change { group.users.count }.by(1)
   end
 
+  it "extends one-time access from the existing expiry" do
+    one_time_product =
+      Fabricate(
+        :dodo_product,
+        external_id: "pdt_one_time",
+        group_name: group.name,
+        billing_type: "one_time",
+        recurring_interval: "quarter",
+      )
+    existing_order =
+      Fabricate(
+        :dodo_order,
+        user: user,
+        product: one_time_product,
+        expires_at: 3.days.from_now,
+      )
+
+    described_class.process!(
+      event: {
+        type: "payment.succeeded",
+        data: {
+          payment_id: "pay_renewal",
+          customer: { email: user.email },
+          product_cart: [{ product_id: one_time_product.external_id, quantity: 1 }],
+          total_amount: 1000,
+          currency: "USD",
+          metadata: {
+            discourse_user_reference: user_reference,
+            discourse_product_id: one_time_product.id.to_s,
+          },
+        },
+      },
+    )
+
+    renewal = DiscourseDodoSubscriptions::Order.find_by(external_id: "pay_renewal")
+    expect(renewal.starts_at).to be_within(1.second).of(existing_order.expires_at)
+    expect(renewal.expires_at).to be_within(1.second).of(existing_order.expires_at + 3.months)
+  end
+
   it "keeps group access when another valid source remains" do
     one_time_product =
       Fabricate(

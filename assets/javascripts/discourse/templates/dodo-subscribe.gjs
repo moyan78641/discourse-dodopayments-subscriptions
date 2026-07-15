@@ -10,5 +10,5 @@ export default RouteTemplate(
 
       {{outlet}}
     </div>
-  </template>
+  </template>,
 );

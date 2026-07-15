@@ -24,7 +24,7 @@ export default class AdminDodoOrder extends EmberObject {
     return ajax(`/subscribe/admin/orders/${this.id}`, {
       method: "patch",
       data,
-    }).then((result) => this.setProperties(result));
+    });
   }
 
   get amountLabel() {

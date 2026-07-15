@@ -41,9 +41,15 @@ Use `subscription` for automatic renewal. Use `one_time` for prepaid access that
 
 One-time purchases require a separate one-time product in Dodo Payments. Do not reuse a recurring product ID for a one-time row.
 
-Products with the same `plan_key` are combined into one card on `/subscribe`. This lets one membership plan offer:
+Products with the same `plan_key` are combined into one card on `/subscribe`. When `plan_key` is left blank in the admin UI, it defaults to the Discourse group name, so the monthly, quarterly, half-yearly, and yearly products for one group are combined automatically. Set an explicit `plan_key` only when you need to keep two products for the same group separate.
 
-- Automatic renewal or one-time purchase
+The membership page has separate tabs for:
+
+- Automatic renewal
+- One-time purchase
+
+Within each tab, one membership card contains all configured periods:
+
 - Monthly, quarterly, half-yearly, and yearly options
 - Different prices and automatically calculated longer-term discounts
 

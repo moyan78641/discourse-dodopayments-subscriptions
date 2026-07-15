@@ -7,33 +7,30 @@ import { i18n } from "discourse-i18n";
 
 export default RouteTemplate(
   <template>
+    {{#if @controller.hasMultipleBillingTypes}}
+      <div
+        class="dodo-billing-toggle dodo-subscribe__billing-tabs"
+        role="tablist"
+      >
+        {{#each @controller.billingTypes as |billingType|}}
+          <button
+            type="button"
+            role="tab"
+            aria-selected={{if billingType.selected "true" "false"}}
+            class="dodo-billing-toggle__option
+              {{if billingType.selected 'is-selected'}}"
+            {{on "click" (fn @controller.selectBillingType billingType.value)}}
+          >
+            {{billingType.label}}
+          </button>
+        {{/each}}
+      </div>
+    {{/if}}
+
     {{#if @controller.productGroups.length}}
       <div class="dodo-product-list">
         {{#each @controller.productGroups as |group|}}
           <article class="dodo-product-list__item">
-            {{#if group.hasMultipleBillingTypes}}
-              <div class="dodo-billing-toggle" role="group">
-                {{#each group.billingTypes as |billingType|}}
-                  <button
-                    type="button"
-                    aria-pressed={{if billingType.selected "true" "false"}}
-                    class="dodo-billing-toggle__option
-                      {{if billingType.selected 'is-selected'}}"
-                    {{on
-                      "click"
-                      (fn
-                        @controller.selectBillingType
-                        group.key
-                        billingType.value
-                      )
-                    }}
-                  >
-                    {{billingType.label}}
-                  </button>
-                {{/each}}
-              </div>
-            {{/if}}
-
             {{#if group.hasMultiplePlans}}
               <div class="dodo-product-list__plans">
                 {{#each group.plans as |plan|}}
@@ -43,12 +40,7 @@ export default RouteTemplate(
                     class="dodo-plan-toggle {{if plan.selected 'is-selected'}}"
                     {{on
                       "click"
-                      (fn
-                        @controller.selectPlan
-                        group.key
-                        group.selectedBillingType
-                        plan.interval
-                      )
+                      (fn @controller.selectPlan group.key plan.interval)
                     }}
                   >
                     <span>{{plan.intervalLabel}}</span>

@@ -85,6 +85,7 @@ module DiscourseDodoSubscriptions
         description: PrettyText.cook(product.description.to_s),
         amount_cents: product.amount_cents,
         currency: product.currency,
+        group_name: product.group_name,
         recurring_interval: product.recurring_interval,
         billing_type: product.billing_type,
         plan_key: product.plan_key,

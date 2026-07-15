@@ -32,6 +32,8 @@ module DiscourseDodoSubscriptions
           return_url: return_url,
           cancel_url: cancel_url,
           minimal_address: true,
+          allowed_payment_method_types: allowed_payment_methods(product),
+          billing_currency: product.wechat_pay_enabled ? product.currency : nil,
         }.compact,
       )
     end
@@ -48,7 +50,16 @@ module DiscourseDodoSubscriptions
         discourse_username: user.username_lower,
         discourse_product_id: product.id.to_s,
         dodo_product_id: product.external_id,
+        discourse_billing_type: product.billing_type,
+        discourse_plan_key: product.plan_key,
+        discourse_access_interval: product.recurring_interval,
       }
+    end
+
+    def allowed_payment_methods(product)
+      return unless product.one_time? && product.wechat_pay_enabled
+
+      %w[we_chat_pay credit debit]
     end
 
     def post(path, body)

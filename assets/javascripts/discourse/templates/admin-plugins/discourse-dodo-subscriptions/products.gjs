@@ -29,7 +29,9 @@ export default RouteTemplate(
           {{on "submit" @controller.preventFormSubmit}}
         >
           <label class="dodo-admin-products__field">
-            <span>{{i18n "discourse_dodo_subscriptions.admin.products.external_id"}}</span>
+            <span>{{i18n
+                "discourse_dodo_subscriptions.admin.products.external_id"
+              }}</span>
             <Input
               @value={{product.external_id}}
               placeholder="pdt_..."
@@ -38,15 +40,46 @@ export default RouteTemplate(
           </label>
 
           <label class="dodo-admin-products__field">
-            <span>{{i18n "discourse_dodo_subscriptions.admin.products.name"}}</span>
+            <span>{{i18n
+                "discourse_dodo_subscriptions.admin.products.name"
+              }}</span>
+            <Input @value={{product.name}} class="dodo-admin-products__input" />
+          </label>
+
+          <label class="dodo-admin-products__field">
+            <span>{{i18n
+                "discourse_dodo_subscriptions.admin.products.plan_key"
+              }}</span>
             <Input
-              @value={{product.name}}
+              @value={{product.plan_key}}
+              placeholder="members"
               class="dodo-admin-products__input"
             />
           </label>
 
           <label class="dodo-admin-products__field">
-            <span>{{i18n "discourse_dodo_subscriptions.admin.products.group_name"}}</span>
+            <span>{{i18n
+                "discourse_dodo_subscriptions.admin.products.billing_type"
+              }}</span>
+            <DSelect
+              @value={{product.billing_type}}
+              @includeNone={{false}}
+              @onChange={{fn @controller.updateProductBillingType product}}
+              class="dodo-admin-products__select"
+              as |select|
+            >
+              {{#each @controller.billingTypes as |billingType|}}
+                <select.Option @value={{billingType.value}}>
+                  {{billingType.label}}
+                </select.Option>
+              {{/each}}
+            </DSelect>
+          </label>
+
+          <label class="dodo-admin-products__field">
+            <span>{{i18n
+                "discourse_dodo_subscriptions.admin.products.group_name"
+              }}</span>
             <GroupChooser
               @content={{@controller.groups}}
               @value={{product.groupNames}}
@@ -59,7 +92,9 @@ export default RouteTemplate(
           </label>
 
           <label class="dodo-admin-products__field">
-            <span>{{i18n "discourse_dodo_subscriptions.admin.products.amount"}}</span>
+            <span>{{i18n
+                "discourse_dodo_subscriptions.admin.products.amount"
+              }}</span>
             <Input
               @value={{product.amount}}
               @type="number"
@@ -70,7 +105,9 @@ export default RouteTemplate(
           </label>
 
           <label class="dodo-admin-products__field">
-            <span>{{i18n "discourse_dodo_subscriptions.admin.products.currency"}}</span>
+            <span>{{i18n
+                "discourse_dodo_subscriptions.admin.products.currency"
+              }}</span>
             <DSelect
               @value={{product.currency}}
               @includeNone={{false}}
@@ -87,7 +124,9 @@ export default RouteTemplate(
           </label>
 
           <label class="dodo-admin-products__field">
-            <span>{{i18n "discourse_dodo_subscriptions.admin.products.recurring_interval"}}</span>
+            <span>{{i18n
+                "discourse_dodo_subscriptions.admin.products.access_interval"
+              }}</span>
             <DSelect
               @value={{product.recurring_interval}}
               @includeNone={{false}}
@@ -103,8 +142,25 @@ export default RouteTemplate(
             </DSelect>
           </label>
 
-          <label class="dodo-admin-products__field dodo-admin-products__field--wide">
-            <span>{{i18n "discourse_dodo_subscriptions.admin.products.description"}}</span>
+          <label class="dodo-admin-products__field">
+            <span>{{i18n
+                "discourse_dodo_subscriptions.admin.products.position"
+              }}</span>
+            <Input
+              @value={{product.position}}
+              @type="number"
+              min="0"
+              step="1"
+              class="dodo-admin-products__input"
+            />
+          </label>
+
+          <label
+            class="dodo-admin-products__field dodo-admin-products__field--wide"
+          >
+            <span>{{i18n
+                "discourse_dodo_subscriptions.admin.products.description"
+              }}</span>
             <Textarea
               @value={{product.description}}
               class="dodo-admin-products__description"
@@ -117,8 +173,18 @@ export default RouteTemplate(
           </label>
           <label class="dodo-admin-products__checkbox">
             <Input @type="checkbox" @checked={{product.repurchaseable}} />
-            {{i18n "discourse_dodo_subscriptions.admin.products.repurchaseable"}}
+            {{i18n
+              "discourse_dodo_subscriptions.admin.products.repurchaseable"
+            }}
           </label>
+          {{#if product.isOneTime}}
+            <label class="dodo-admin-products__checkbox">
+              <Input @type="checkbox" @checked={{product.wechat_pay_enabled}} />
+              {{i18n
+                "discourse_dodo_subscriptions.admin.products.wechat_pay_enabled"
+              }}
+            </label>
+          {{/if}}
 
           <div class="dodo-admin-products__actions">
             <DButton
@@ -138,5 +204,5 @@ export default RouteTemplate(
         </form>
       {{/each}}
     </div>
-  </template>
+  </template>,
 );

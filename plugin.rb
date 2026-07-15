@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 # name: discourse-dodopayments-subscriptions
-# about: Sell Dodo Payments subscriptions that grant access to Discourse groups.
-# version: 0.1.0
+# about: Sell recurring and one-time Dodo Payments memberships that grant access to Discourse groups.
+# version: 0.2.0
 # authors: Codex
-# url: https://github.com/discourse/discourse
+# url: https://github.com/moyan78641/discourse-dodopayments-subscriptions
 
 enabled_site_setting :discourse_dodo_subscriptions_enabled
 
@@ -17,6 +17,8 @@ Discourse::Application.routes.append do
   get "/admin/plugins/discourse-dodo-subscriptions" => "admin/plugins#index",
       constraints: AdminConstraint.new
   get "/admin/plugins/discourse-dodo-subscriptions/products" => "admin/plugins#index",
+      constraints: AdminConstraint.new
+  get "/admin/plugins/discourse-dodo-subscriptions/orders" => "admin/plugins#index",
       constraints: AdminConstraint.new
   get "/u/:username/billing" => "users#show",
       constraints: {
@@ -39,6 +41,8 @@ require_relative "app/controllers/concerns/discourse_dodo_subscriptions/dodo"
 require_relative "app/controllers/concerns/discourse_dodo_subscriptions/group"
 
 after_initialize do
+  require_relative "jobs/scheduled/process_dodo_memberships"
+
   Discourse::Application.routes.append { mount DiscourseDodoSubscriptions::Engine, at: "subscribe" }
 
   add_to_serializer(

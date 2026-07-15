@@ -1,7 +1,7 @@
-import { fn } from "@ember/helper";
+import { concat, fn } from "@ember/helper";
 import { on } from "@ember/modifier";
+import { trustHTML } from "@ember/template";
 import RouteTemplate from "ember-route-template";
-import htmlSafe from "discourse/helpers/html-safe";
 import DButton from "discourse/ui-kit/d-button";
 import { i18n } from "discourse-i18n";
 
@@ -11,6 +11,29 @@ export default RouteTemplate(
       <div class="dodo-product-list">
         {{#each @controller.productGroups as |group|}}
           <article class="dodo-product-list__item">
+            {{#if group.hasMultipleBillingTypes}}
+              <div class="dodo-billing-toggle" role="group">
+                {{#each group.billingTypes as |billingType|}}
+                  <button
+                    type="button"
+                    aria-pressed={{if billingType.selected "true" "false"}}
+                    class="dodo-billing-toggle__option
+                      {{if billingType.selected 'is-selected'}}"
+                    {{on
+                      "click"
+                      (fn
+                        @controller.selectBillingType
+                        group.key
+                        billingType.value
+                      )
+                    }}
+                  >
+                    {{billingType.label}}
+                  </button>
+                {{/each}}
+              </div>
+            {{/if}}
+
             {{#if group.hasMultiplePlans}}
               <div class="dodo-product-list__plans">
                 {{#each group.plans as |plan|}}
@@ -18,7 +41,15 @@ export default RouteTemplate(
                     type="button"
                     aria-pressed={{if plan.selected "true" "false"}}
                     class="dodo-plan-toggle {{if plan.selected 'is-selected'}}"
-                    {{on "click" (fn @controller.selectPlan group.key plan.interval)}}
+                    {{on
+                      "click"
+                      (fn
+                        @controller.selectPlan
+                        group.key
+                        group.selectedBillingType
+                        plan.interval
+                      )
+                    }}
                   >
                     <span>{{plan.intervalLabel}}</span>
                     {{#if plan.savingsLabel}}
@@ -34,9 +65,17 @@ export default RouteTemplate(
                 <h2>{{group.name}}</h2>
                 {{#if group.description}}
                   <div class="dodo-product-list__description">
-                    {{htmlSafe group.description}}
+                    {{trustHTML group.description}}
                   </div>
                 {{/if}}
+                <div class="dodo-payment-note">
+                  <span>{{group.selectedPlan.paymentNote}}</span>
+                  {{#if group.selectedPlan.supportsWechat}}
+                    <strong>{{i18n
+                        "discourse_dodo_subscriptions.subscribe.wechat_supported"
+                      }}</strong>
+                  {{/if}}
+                </div>
               </div>
 
               <div class="dodo-product-list__purchase">
@@ -66,11 +105,25 @@ export default RouteTemplate(
 
                 {{#if group.selectedPlan.subscribed}}
                   <p class="dodo-product-list__subscribed">
-                    {{i18n "discourse_dodo_subscriptions.subscribe.already_subscribed"}}
+                    {{i18n
+                      "discourse_dodo_subscriptions.subscribe.already_subscribed"
+                    }}
+                  </p>
+                {{else if group.selectedPlan.conflict}}
+                  <p class="dodo-product-list__conflict">
+                    {{i18n
+                      (concat
+                        "discourse_dodo_subscriptions.subscribe.conflicts."
+                        group.selectedPlan.conflict
+                      )
+                    }}
                   </p>
                 {{else}}
                   <DButton
-                    @action={{fn @controller.checkout group.selectedPlan.product}}
+                    @action={{fn
+                      @controller.checkout
+                      group.selectedPlan.product
+                    }}
                     @isLoading={{group.selectedPlan.loading}}
                     @icon="credit-card"
                     @label="discourse_dodo_subscriptions.subscribe.checkout"
@@ -85,5 +138,5 @@ export default RouteTemplate(
     {{else}}
       <p>{{i18n "discourse_dodo_subscriptions.subscribe.no_products"}}</p>
     {{/if}}
-  </template>
+  </template>,
 );

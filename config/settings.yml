@@ -23,3 +23,10 @@ discourse_dodo_subscriptions:
     client: false
   discourse_dodo_subscriptions_enable_verbose_logging:
     default: false
+  discourse_dodo_subscriptions_reminder_days:
+    default: "7,3,1"
+    client: false
+  discourse_dodo_subscriptions_notify_on_purchase:
+    default: true
+  discourse_dodo_subscriptions_notify_on_expiration:
+    default: true

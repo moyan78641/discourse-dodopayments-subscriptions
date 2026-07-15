@@ -3,6 +3,7 @@
 DiscourseDodoSubscriptions::Engine.routes.draw do
   namespace :admin, constraints: AdminConstraint.new do
     resources :products
+    resources :orders, only: %i[index create update]
   end
 
   namespace :user do

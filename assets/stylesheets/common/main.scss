@@ -30,8 +30,36 @@
   background: var(--secondary);
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1rem;
   min-width: 0;
+}
+
+.dodo-billing-toggle {
+  align-self: flex-start;
+  background: var(--primary-very-low);
+  border: 1px solid var(--primary-low);
+  border-radius: 6px;
+  display: inline-grid;
+  gap: 0.25rem;
+  grid-auto-flow: column;
+  padding: 0.25rem;
+}
+
+.dodo-billing-toggle__option {
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  color: var(--primary-high);
+  cursor: pointer;
+  font-weight: 700;
+  min-height: 2.35rem;
+  padding: 0.45rem 0.9rem;
+  white-space: nowrap;
+
+  &.is-selected {
+    background: var(--primary);
+    color: var(--secondary);
+  }
 }
 
 .dodo-product-list__plans {
@@ -99,6 +127,23 @@
   }
 }
 
+.dodo-payment-note {
+  align-items: center;
+  color: var(--primary-medium);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: var(--font-down-1);
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+
+  strong {
+    background: var(--success-low);
+    border-radius: 4px;
+    color: var(--success);
+    padding: 0.2rem 0.45rem;
+  }
+}
+
 .dodo-product-list__purchase {
   display: flex;
   flex-direction: column;
@@ -151,6 +196,13 @@
   font-weight: 700;
 }
 
+.dodo-product-list__conflict {
+  color: var(--primary-medium);
+  font-size: var(--font-down-1);
+  margin: 0;
+  max-width: 18rem;
+}
+
 .dodo-product-list__button {
   justify-content: center;
   margin-top: 0.5rem;
@@ -171,6 +223,11 @@
     align-self: stretch;
     border-radius: 6px;
     flex-wrap: wrap;
+  }
+
+  .dodo-billing-toggle {
+    align-self: stretch;
+    grid-auto-flow: row;
   }
 
   .dodo-plan-toggle {
@@ -200,6 +257,29 @@
   p {
     color: var(--primary-medium);
     margin: 0;
+  }
+}
+
+.dodo-admin-shell {
+  max-width: 90rem;
+}
+
+.dodo-admin-tabs {
+  border-bottom: 1px solid var(--primary-low);
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.25rem;
+
+  a {
+    color: var(--primary-high);
+    font-weight: 700;
+    padding: 0.75rem 0;
+    text-decoration: none;
+
+    &.active {
+      border-bottom: 3px solid var(--tertiary);
+      color: var(--primary);
+    }
   }
 }
 
@@ -383,6 +463,176 @@
   }
 }
 
+.dodo-admin-orders__summary {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  margin-bottom: 1.25rem;
+
+  > div {
+    background: var(--primary-very-low);
+    border-left: 3px solid var(--tertiary);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    min-width: 0;
+    padding: 0.85rem 1rem;
+  }
+
+  span {
+    color: var(--primary-medium);
+    font-size: var(--font-down-1);
+  }
+
+  strong {
+    font-size: var(--font-up-3);
+  }
+}
+
+.dodo-admin-order-filters {
+  align-items: center;
+  display: grid;
+  gap: 0.6rem;
+  grid-template-columns: minmax(14rem, 2fr) repeat(2, minmax(9rem, 1fr)) auto;
+  margin-bottom: 1.25rem;
+
+  input,
+  .select-kit {
+    margin: 0;
+    width: 100%;
+  }
+}
+
+.dodo-admin-manual-order {
+  border: 1px solid var(--primary-low);
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+}
+
+.dodo-admin-section-heading {
+  margin-bottom: 0.9rem;
+
+  h2 {
+    margin: 0 0 0.25rem;
+  }
+
+  p {
+    color: var(--primary-medium);
+    margin: 0;
+  }
+}
+
+.dodo-admin-manual-order__fields {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 0.9rem;
+
+  > label:not(.dodo-admin-products__checkbox) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    min-width: 0;
+
+    > span {
+      color: var(--primary-high);
+      font-size: var(--font-down-1);
+      font-weight: 700;
+    }
+  }
+
+  input,
+  textarea,
+  .select-kit {
+    width: 100%;
+  }
+}
+
+.dodo-admin-manual-order__note {
+  grid-column: span 2;
+}
+
+.dodo-admin-order-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.dodo-admin-order {
+  border: 1px solid var(--primary-low);
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+.dodo-admin-order__identity {
+  align-items: start;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  span {
+    color: var(--primary-medium);
+  }
+}
+
+.dodo-admin-order__status {
+  border-radius: 4px;
+  font-size: var(--font-down-1);
+  font-weight: 700;
+  padding: 0.3rem 0.5rem;
+}
+
+.dodo-admin-order__status--succeeded {
+  background: var(--success-low);
+  color: var(--success) !important;
+}
+
+.dodo-admin-order__status--expired,
+.dodo-admin-order__status--revoked,
+.dodo-admin-order__status--refunded {
+  background: var(--primary-very-low);
+  color: var(--primary-high) !important;
+}
+
+.dodo-admin-order__details {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  margin: 1rem 0;
+
+  dt {
+    color: var(--primary-medium);
+    font-size: var(--font-down-1);
+    margin-bottom: 0.2rem;
+  }
+
+  dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+}
+
+.dodo-admin-order__operations {
+  align-items: center;
+  border-top: 1px solid var(--primary-low);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-top: 0.75rem;
+
+  input {
+    margin: 0;
+    min-width: 8rem;
+  }
+}
+
 @media screen and (width <= 900px) {
   .dodo-admin-products__row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -392,6 +642,19 @@
   .dodo-admin-products__field--wide,
   .dodo-admin-products__actions {
     grid-column: span 2;
+  }
+
+  .dodo-admin-orders__summary,
+  .dodo-admin-manual-order__fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dodo-admin-order-filters {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .dodo-admin-order__details {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -427,5 +690,19 @@
 
   .dodo-user-subscription__details {
     grid-template-columns: 1fr;
+  }
+
+  .dodo-admin-orders__summary,
+  .dodo-admin-manual-order__fields,
+  .dodo-admin-order__details {
+    grid-template-columns: 1fr;
+  }
+
+  .dodo-admin-order-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .dodo-admin-manual-order__note {
+    grid-column: 1;
   }
 }

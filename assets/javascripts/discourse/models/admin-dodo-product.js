@@ -4,7 +4,7 @@ import { ajax } from "discourse/lib/ajax";
 export default class AdminDodoProduct extends EmberObject {
   static findAll() {
     return ajax("/subscribe/admin/products", { method: "get" }).then(
-      (products) => products.map((product) => AdminDodoProduct.create(product))
+      (products) => products.map((product) => AdminDodoProduct.create(product)),
     );
   }
 
@@ -14,6 +14,9 @@ export default class AdminDodoProduct extends EmberObject {
       repurchaseable: false,
       currency: "USD",
       recurring_interval: "month",
+      billing_type: "subscription",
+      wechat_pay_enabled: false,
+      position: 0,
     });
   }
 
@@ -48,6 +51,11 @@ export default class AdminDodoProduct extends EmberObject {
     return this.group_name ? [this.group_name] : [];
   }
 
+  @computed("billing_type")
+  get isOneTime() {
+    return this.billing_type === "one_time";
+  }
+
   save() {
     const data = this.payload;
     const id = this.id;
@@ -77,6 +85,10 @@ export default class AdminDodoProduct extends EmberObject {
       amount_cents: this.amount_cents,
       currency: this.currency,
       recurring_interval: this.recurring_interval,
+      billing_type: this.billing_type,
+      plan_key: this.plan_key,
+      wechat_pay_enabled: this.wechat_pay_enabled,
+      position: this.position,
     };
   }
 }

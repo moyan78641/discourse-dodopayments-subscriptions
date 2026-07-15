@@ -7,6 +7,9 @@ en:
     discourse_dodo_subscriptions_environment: Dodo Payments environment. Use test with test API keys and live with live API keys.
     discourse_dodo_subscriptions_base_url: Override Dodo Payments API base URL. Leave blank to use test/live automatically; this is not a product ID.
     discourse_dodo_subscriptions_enable_verbose_logging: Enable verbose Dodo Payments subscription logging.
+    discourse_dodo_subscriptions_reminder_days: Comma-separated reminder days for one-time memberships, for example 7,3,1.
+    discourse_dodo_subscriptions_notify_on_purchase: Send a system message after a membership is opened or renewed.
+    discourse_dodo_subscriptions_notify_on_expiration: Send a system message when a one-time membership finally expires.
   discourse_dodo_subscriptions:
     dodo_not_configured: Dodo Payments is not configured.
     checkout_failed: Unable to create checkout.
@@ -15,4 +18,33 @@ en:
     webhook_missing_headers: Missing Dodo Payments webhook headers.
     webhook_missing_user: Webhook could not be matched to a Discourse user.
     webhook_email_mismatch: Webhook customer email does not belong to the matched Discourse user.
-    webhook_product_not_found: Webhook product is not published in Discourse.
+    webhook_product_not_found: Webhook product is not configured in Discourse.
+  system_messages:
+    dodo_subscription_opened:
+      title: "Automatic membership opened"
+      subject_template: "Your automatic membership is active"
+      text_body_template: |
+        Your **%{plan_name}** automatic membership is active. The next renewal is **%{renews_at}**.
+
+        [View membership status](%{membership_url})
+    dodo_membership_opened:
+      title: "Membership opened"
+      subject_template: "Your membership is active"
+      text_body_template: |
+        Your **%{plan_name}** membership is active until **%{expires_at}**.
+
+        [View membership or renew](%{renew_url})
+    dodo_membership_expiry_reminder:
+      title: "Membership expiring"
+      subject_template: "Your membership expires in %{days} days"
+      text_body_template: |
+        Your **%{plan_name}** membership expires in **%{days} days**, on **%{expires_at}**.
+
+        [Renew membership](%{renew_url})
+    dodo_membership_expired:
+      title: "Membership expired"
+      subject_template: "Your membership has expired"
+      text_body_template: |
+        Your **%{plan_name}** membership expired on **%{expires_at}**.
+
+        [Open membership again](%{renew_url})

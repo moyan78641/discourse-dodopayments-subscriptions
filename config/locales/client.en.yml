@@ -12,18 +12,21 @@ en:
     discourse_dodo_subscriptions_environment: Dodo Payments environment. Use test with Dodo test API keys and live with live keys.
     discourse_dodo_subscriptions_base_url: Override the Dodo Payments API base URL. Leave blank to use test/live automatically; this is not a product ID.
     discourse_dodo_subscriptions_enable_verbose_logging: Enable verbose Dodo Payments subscription logging for debugging.
+    discourse_dodo_subscriptions_reminder_days: Comma-separated reminder days for one-time memberships, for example 7,3,1.
+    discourse_dodo_subscriptions_notify_on_purchase: Send a system message after a membership is opened or renewed.
+    discourse_dodo_subscriptions_notify_on_expiration: Send a system message when a one-time membership finally expires.
   js:
     discourse_dodo_subscriptions:
       admin_navigation: Dodo Subscriptions
       navigation:
-        subscribe: Subscribe
-        subscriptions: Subscriptions
+        subscribe: Membership
+        subscriptions: Membership
       user:
         navigation:
           subscriptions: My subscriptions
           subscribe: Subscribe
         subscriptions:
-          title: My subscriptions
+          title: My membership
           summary: Review your current subscription status, renewal date, and access.
           id: Subscription ID
           plan: Current plan
@@ -36,7 +39,9 @@ en:
           expires_at: Expires on
           started_at: Started
           renewal: Renewal
+          one_time_rate: "%{amount} for %{duration}"
           renews_automatically: Renews automatically
+          renews_manually: Renew manually before expiry
           expires_at_period_end: Ends after the current period
           not_renewing: Does not renew
           cancel_at_period_end: Ends at period end
@@ -51,41 +56,124 @@ en:
             failed: Payment failed
             expired: Expired
             on_hold: On hold
+            paused: Paused
+            revoked: Revoked
+            refunded: Refunded
+            succeeded: Scheduled
             unknown: Unknown
+          access_type: Access type
+          billing_types:
+            subscription: Automatic renewal
+            one_time: One-time purchase
       intervals:
         month: Monthly
         quarter: Quarterly
         half_year: Every 6 months
         year: Yearly
+      durations:
+        month: 1 month
+        quarter: 3 months
+        half_year: 6 months
+        year: 1 year
       subscribe:
-        title: Subscribe
-        no_products: No subscriptions are available right now.
-        login_required: Log in or create an account to subscribe.
-        already_subscribed: You are subscribed.
+        title: Membership plans
+        no_products: No membership plans are available right now.
+        login_required: Log in or create an account to open a membership.
+        already_subscribed: Automatic renewal is active.
         checkout: Continue to checkout
         checkout_loading: Creating checkout...
         checkout_error: Unable to create checkout.
         pending_checkout: A checkout is already in progress. Finish it or try again shortly.
         monthly_equivalent: "%{amount} / month"
         save_percent: "Save %{percent}%"
-        success_title: Checkout received
-        success_body: Your access will update as soon as the subscription is confirmed.
-        view_subscriptions: View my subscriptions
+        success_title: Payment received
+        success_body: Your membership access and expiry will update after payment confirmation.
+        view_subscriptions: View my membership
+        wechat_supported: WeChat Pay available
+        billing_types:
+          subscription: Automatic renewal
+          one_time: One-time purchase
+        payment_notes:
+          subscription: Pay by credit or debit card and renew automatically
+          one_time: Pay once and renew manually before expiry
+        conflicts:
+          active_subscription: An automatic subscription is already active. End it before purchasing one-time access.
+          active_one_time: One-time access is still active. Switch to automatic renewal after it expires.
       admin:
+        navigation:
+          label: Membership administration
+          products: Plan configuration
+          orders: Orders and manual grants
         products:
-          title: Dodo Subscription Products
-          help: Create one row per Dodo Payments product ID. Amount, currency, and interval are display fields; Dodo still controls the real checkout price and billing cycle.
+          title: Dodo membership plans
+          help: Each Dodo product is one purchase option. Products with the same plan group are combined into one customer-facing card.
           add: Add product
           save: Save product
           delete: Delete
           external_id: Dodo product ID
           name: Display name
+          plan_key: Plan group
+          billing_type: Payment type
           group_name: Discourse group name
           amount: Display amount
           amount_cents: Internal display amount value
           currency: Currency
           recurring_interval: Billing interval
+          access_interval: Billing interval / access duration
+          position: Display order
           description: Description
           active: Active
           repurchaseable: Repurchaseable
+          wechat_pay_enabled: Enable WeChat Pay for one-time purchases
           delete_confirm: Delete this Dodo subscription product?
+          billing_types:
+            subscription: Automatic subscription
+            one_time: One-time purchase
+        orders:
+          title: Membership orders
+          subscriptions_title: Automatic subscriptions
+          manual_title: Manual order
+          manual_help: Create an auditable membership order for offline transfers, gifts, or other manual payments.
+          user: Username or email
+          product: Plan
+          duration_days: Custom days (blank uses plan duration)
+          amount: Amount received
+          payment_method: Payment method
+          note: Note
+          operation_note: Operation note
+          notify_user: Notify user
+          create: Create manual order
+          source: Source
+          expires_at: Expires
+          next_billing: Next billing
+          external_id: Order ID
+          days: Days
+          extend: Extend
+          set_expiry: Set expiry
+          revoke: Revoke
+          revoke_confirm: Revoke the membership access associated with this order?
+          missing_fields: Enter a user and plan.
+          search_placeholder: Search username or email
+          search: Search
+          empty: No membership orders yet.
+          no_subscriptions: No automatic subscriptions yet.
+          summary:
+            active: Active
+            expiring: Expiring in 7 days
+            expired: Expired
+            manual: Manual orders
+            subscriptions: Automatic subscriptions
+          statuses:
+            succeeded: Active
+            active: Active
+            renewed: Active
+            cancelled: Cancelled
+            failed: Payment failed
+            on_hold: On hold
+            paused: Paused
+            expired: Expired
+            revoked: Revoked
+            refunded: Refunded
+          sources:
+            dodo: Dodo payment
+            manual: Manual order

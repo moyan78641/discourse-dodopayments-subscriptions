@@ -9,7 +9,7 @@ module DiscourseDodoSubscriptions
     requires_login except: %i[index show success]
 
     def index
-      products = Product.published.order(:id).map { |product| serialize_product(product) }
+      products = Product.published.order(:position, :id).map { |product| serialize_product(product) }
       render_json_dump products
     end
 
@@ -32,11 +32,14 @@ module DiscourseDodoSubscriptions
       product = Product.published.find_by(external_id: params[:product_id])
       raise Discourse::NotFound, I18n.t("discourse_dodo_subscriptions.product_not_found") if product.blank?
 
-      if !product.repurchaseable && product.subscribed_by?(current_user)
+      if product.subscription? && !product.repurchaseable && product.subscribed_by?(current_user)
         return render_json_dump subscribed: true
       end
 
-      unless product.repurchaseable
+      conflict = purchase_conflict(product)
+      return render_json_dump conflict: conflict if conflict.present?
+
+      if product.one_time? || !product.repurchaseable
         pending_checkout_url =
           DiscourseDodoSubscriptions::PendingCheckout.checkout_url(
             user: current_user,
@@ -64,7 +67,7 @@ module DiscourseDodoSubscriptions
         user: current_user,
         product: product,
         url: url,
-      ) unless product.repurchaseable
+      ) if product.one_time? || !product.repurchaseable
 
       render_json_dump checkout_url: url
     rescue DiscourseDodoSubscriptions::Client::Error => e
@@ -83,6 +86,10 @@ module DiscourseDodoSubscriptions
         amount_cents: product.amount_cents,
         currency: product.currency,
         recurring_interval: product.recurring_interval,
+        billing_type: product.billing_type,
+        plan_key: product.plan_key,
+        wechat_pay_enabled: product.wechat_pay_enabled,
+        conflict: purchase_conflict(product),
         subscribed: product.subscribed_by?(current_user),
         repurchaseable: product.repurchaseable,
       }
@@ -94,6 +101,12 @@ module DiscourseDodoSubscriptions
 
     def verbose_logging?
       SiteSetting.discourse_dodo_subscriptions_enable_verbose_logging
+    end
+
+    def purchase_conflict(product)
+      return if current_user.blank?
+      return "active_subscription" if product.one_time? && product.active_subscription_for?(current_user)
+      return "active_one_time" if product.subscription? && product.active_order_for?(current_user)
     end
   end
 end

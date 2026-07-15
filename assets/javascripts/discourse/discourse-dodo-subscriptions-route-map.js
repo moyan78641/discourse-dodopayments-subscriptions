@@ -6,6 +6,7 @@ export default {
   map() {
     this.route("discourse-dodo-subscriptions", function () {
       this.route("products");
+      this.route("orders");
     });
   },
 };

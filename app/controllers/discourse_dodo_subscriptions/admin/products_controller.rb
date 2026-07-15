@@ -6,7 +6,7 @@ module DiscourseDodoSubscriptions
       requires_plugin PLUGIN_NAME
 
       def index
-        render_json_dump Product.order(:id).map { |product| serialize_product(product) }
+        render_json_dump Product.order(:position, :id).map { |product| serialize_product(product) }
       end
 
       def show
@@ -47,6 +47,10 @@ module DiscourseDodoSubscriptions
           :amount_cents,
           :currency,
           :recurring_interval,
+          :billing_type,
+          :plan_key,
+          :wechat_pay_enabled,
+          :position,
         )
       end
 
@@ -63,6 +67,10 @@ module DiscourseDodoSubscriptions
             amount_cents
             currency
             recurring_interval
+            billing_type
+            plan_key
+            wechat_pay_enabled
+            position
           ],
         )
       end

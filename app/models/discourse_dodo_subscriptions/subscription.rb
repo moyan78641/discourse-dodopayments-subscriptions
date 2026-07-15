@@ -5,7 +5,7 @@ module DiscourseDodoSubscriptions
     self.table_name = "discourse_dodo_subscriptions"
 
     GRANTING_STATUSES = %w[active renewed].freeze
-    REVOKING_STATUSES = %w[cancelled failed expired on_hold].freeze
+    REVOKING_STATUSES = %w[cancelled failed expired on_hold paused].freeze
 
     belongs_to :customer
     belongs_to :product

@@ -3,15 +3,29 @@ import { ajax } from "discourse/lib/ajax";
 import { i18n } from "discourse-i18n";
 
 const ACTIVE_STATUSES = ["active", "renewed"];
-const ENDING_STATUSES = ["cancelled", "failed", "expired", "on_hold"];
+const ENDING_STATUSES = [
+  "cancelled",
+  "failed",
+  "expired",
+  "on_hold",
+  "paused",
+  "revoked",
+  "refunded",
+];
+const KNOWN_STATUSES = [
+  ...ACTIVE_STATUSES,
+  ...ENDING_STATUSES,
+  "succeeded",
+  "unknown",
+];
 
 export default class UserDodoSubscription extends EmberObject {
   static findAll() {
     return ajax("/subscribe/user/subscriptions.json", { method: "get" }).then(
       (subscriptions) =>
         subscriptions.map((subscription) =>
-          UserDodoSubscription.create(subscription)
-        )
+          UserDodoSubscription.create(subscription),
+        ),
     );
   }
 
@@ -24,6 +38,13 @@ export default class UserDodoSubscription extends EmberObject {
     const intervalLabel = this.intervalLabel;
 
     if (amountLabel && intervalLabel) {
+      if (this.billing_type === "one_time") {
+        return i18n(
+          "discourse_dodo_subscriptions.user.subscriptions.one_time_rate",
+          { amount: amountLabel, duration: this.durationLabel },
+        );
+      }
+
       return `${amountLabel} / ${intervalLabel}`;
     }
 
@@ -53,15 +74,28 @@ export default class UserDodoSubscription extends EmberObject {
     return i18n(`discourse_dodo_subscriptions.intervals.${interval}`);
   }
 
+  get durationLabel() {
+    const interval = this.product?.recurring_interval;
+    if (!interval) {
+      return null;
+    }
+
+    return i18n(`discourse_dodo_subscriptions.durations.${interval}`);
+  }
+
   get currentPeriodEndLabel() {
     return this.formatDate(this.current_period_end);
   }
 
   get periodEndTitle() {
+    if (this.billing_type === "one_time") {
+      return i18n("discourse_dodo_subscriptions.user.subscriptions.expires_at");
+    }
+
     return i18n(
       this.cancel_at_period_end
         ? "discourse_dodo_subscriptions.user.subscriptions.expires_at"
-        : "discourse_dodo_subscriptions.user.subscriptions.renews_at"
+        : "discourse_dodo_subscriptions.user.subscriptions.renews_at",
     );
   }
 
@@ -75,19 +109,9 @@ export default class UserDodoSubscription extends EmberObject {
 
   get statusLabel() {
     const status = this.normalizedStatus;
-    const knownStatuses = [
-      "active",
-      "renewed",
-      "cancelled",
-      "failed",
-      "expired",
-      "on_hold",
-      "unknown",
-    ];
-
-    if (knownStatuses.includes(status)) {
+    if (KNOWN_STATUSES.includes(status)) {
       return i18n(
-        `discourse_dodo_subscriptions.user.subscriptions.statuses.${status}`
+        `discourse_dodo_subscriptions.user.subscriptions.statuses.${status}`,
       );
     }
 
@@ -108,19 +132,33 @@ export default class UserDodoSubscription extends EmberObject {
   }
 
   get renewalLabel() {
+    if (this.billing_type === "one_time") {
+      return i18n(
+        "discourse_dodo_subscriptions.user.subscriptions.renews_manually",
+      );
+    }
+
     if (this.cancel_at_period_end) {
       return i18n(
-        "discourse_dodo_subscriptions.user.subscriptions.expires_at_period_end"
+        "discourse_dodo_subscriptions.user.subscriptions.expires_at_period_end",
       );
     }
 
     if (ACTIVE_STATUSES.includes(this.normalizedStatus)) {
       return i18n(
-        "discourse_dodo_subscriptions.user.subscriptions.renews_automatically"
+        "discourse_dodo_subscriptions.user.subscriptions.renews_automatically",
       );
     }
 
     return i18n("discourse_dodo_subscriptions.user.subscriptions.not_renewing");
+  }
+
+  get accessTypeLabel() {
+    return i18n(
+      `discourse_dodo_subscriptions.user.subscriptions.billing_types.${
+        this.billing_type || "subscription"
+      }`,
+    );
   }
 
   get hasDuplicateSubscriptions() {
@@ -134,7 +172,7 @@ export default class UserDodoSubscription extends EmberObject {
 
     return i18n(
       "discourse_dodo_subscriptions.user.subscriptions.duplicate_notice",
-      { count: this.duplicate_subscription_count }
+      { count: this.duplicate_subscription_count },
     );
   }
 

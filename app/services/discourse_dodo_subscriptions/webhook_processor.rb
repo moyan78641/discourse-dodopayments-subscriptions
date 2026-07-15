@@ -2,19 +2,23 @@
 
 module DiscourseDodoSubscriptions
   class WebhookProcessor
-    GRANT_EVENTS = %w[
+    SUBSCRIPTION_GRANT_EVENTS = %w[
       subscription.active
       subscription.renewed
       subscription.updated
       subscription.plan_changed
     ].freeze
-    REVOKE_EVENTS = %w[
+    SUBSCRIPTION_REVOKE_EVENTS = %w[
       subscription.cancelled
       subscription.failed
       subscription.expired
       subscription.on_hold
+      subscription.paused
     ].freeze
-    HANDLED_EVENTS = (GRANT_EVENTS + REVOKE_EVENTS).freeze
+    PAYMENT_EVENTS = %w[payment.succeeded].freeze
+    REFUND_EVENTS = %w[refund.succeeded].freeze
+    HANDLED_EVENTS =
+      (SUBSCRIPTION_GRANT_EVENTS + SUBSCRIPTION_REVOKE_EVENTS + PAYMENT_EVENTS + REFUND_EVENTS).freeze
 
     def self.process!(event:)
       new(event: event).process!
@@ -28,31 +32,10 @@ module DiscourseDodoSubscriptions
     def process!
       return unless HANDLED_EVENTS.include?(event_type)
 
-      product = Product.published.find_by(external_id: product_id)
-      raise Discourse::NotFound, I18n.t("discourse_dodo_subscriptions.webhook_product_not_found") if product.blank?
+      return process_payment! if payment_event?
+      return process_refund! if refund_event?
 
-      user = trusted_user || existing_user
-      raise Discourse::InvalidAccess, I18n.t("discourse_dodo_subscriptions.webhook_missing_user") if user.blank?
-      if customer_email.present? && !email_belongs_to_user?(user)
-        raise Discourse::InvalidAccess, I18n.t("discourse_dodo_subscriptions.webhook_email_mismatch")
-      end
-
-      customer = upsert_customer!(user)
-      previous_product = existing_subscription&.product
-      subscription = upsert_subscription!(customer, product)
-      PendingCheckout.clear(user: user, product: product)
-
-      if grant_event?
-        if previous_product && previous_product.id != product.id &&
-             !active_subscription_exists_for?(user, previous_product)
-          Entitlement.revoke!(user: user, product: previous_product)
-        end
-        Entitlement.grant!(user: user, product: product)
-      elsif revoke_event? && !active_subscription_exists_for?(user, product)
-        Entitlement.revoke!(user: user, product: product)
-      end
-
-      subscription
+      process_subscription!
     end
 
     private
@@ -60,15 +43,89 @@ module DiscourseDodoSubscriptions
     attr_reader :event, :data
 
     def event_type
-      event[:type]
+      event[:type].to_s
     end
 
-    def grant_event?
-      GRANT_EVENTS.include?(event_type) && Subscription::GRANTING_STATUSES.include?(data[:status].to_s)
+    def payment_event?
+      PAYMENT_EVENTS.include?(event_type)
     end
 
-    def revoke_event?
-      REVOKE_EVENTS.include?(event_type) || Subscription::REVOKING_STATUSES.include?(data[:status].to_s)
+    def refund_event?
+      REFUND_EVENTS.include?(event_type)
+    end
+
+    def process_payment!
+      return if data[:subscription_id].present?
+
+      product = find_product
+      if product.blank?
+        raise Discourse::NotFound, I18n.t("discourse_dodo_subscriptions.webhook_product_not_found")
+      end
+      return unless product.one_time?
+
+      user = trusted_user || existing_order&.user
+      validate_user!(user)
+
+      order =
+        OrderManager.open!(
+          user: user,
+          product: product,
+          external_id: payment_id,
+          source: "dodo",
+          amount_cents: data[:total_amount],
+          currency: data[:currency],
+          payment_method: data[:payment_method_type].presence || data[:payment_method],
+          metadata: data.to_h,
+        )
+      PendingCheckout.clear(user: user, product: product)
+      order
+    end
+
+    def process_subscription!
+      product = find_product
+      raise Discourse::NotFound, I18n.t("discourse_dodo_subscriptions.webhook_product_not_found") if product.blank?
+      return unless product.subscription?
+
+      user = trusted_user || existing_subscription&.customer&.user
+      validate_user!(user)
+
+      customer = upsert_customer!(user)
+      previous_product = existing_subscription&.product
+      subscription = upsert_subscription!(customer, product)
+      PendingCheckout.clear(user: user, product: product)
+
+      AccessManager.sync!(user: user, group_name: product.group_name)
+      if Subscription::GRANTING_STATUSES.include?(subscription.status.to_s)
+        MembershipNotifier.subscription_opened!(subscription)
+      end
+      if previous_product && previous_product.group_name != product.group_name
+        AccessManager.sync!(user: user, group_name: previous_product.group_name)
+      end
+
+      subscription
+    end
+
+    def process_refund!
+      return if data[:is_partial]
+
+      order = existing_order
+      return if order.blank? || order.status == "refunded"
+
+      order.update!(status: "refunded")
+      order.events.create!(
+        action: "refunded",
+        details: { refund_id: data[:refund_id], amount: data[:amount], reason: data[:reason] },
+        created_at: Time.zone.now,
+      )
+      AccessManager.sync!(user: order.user, group_name: order.product.group_name)
+      order
+    end
+
+    def validate_user!(user)
+      raise Discourse::InvalidAccess, I18n.t("discourse_dodo_subscriptions.webhook_missing_user") if user.blank?
+      return if customer_email.blank? || email_belongs_to_user?(user)
+
+      raise Discourse::InvalidAccess, I18n.t("discourse_dodo_subscriptions.webhook_email_mismatch")
     end
 
     def upsert_customer!(user)
@@ -104,14 +161,8 @@ module DiscourseDodoSubscriptions
       )
     end
 
-    def existing_user
-      user_id = existing_subscription&.customer&.user_id
-      ::User.find_by(id: user_id) if user_id
-    end
-
     def email_belongs_to_user?(user)
-      email = customer_email
-      ::UserEmail.exists?(user_id: user.id, email: ::Email.downcase(email))
+      ::UserEmail.exists?(user_id: user.id, email: ::Email.downcase(customer_email))
     end
 
     def metadata
@@ -122,34 +173,39 @@ module DiscourseDodoSubscriptions
       data.dig(:customer, :email).presence || data[:customer_email].presence || metadata[:email].presence
     end
 
+    def find_product
+      local_id = metadata[:discourse_product_id]
+      return Product.find_by(id: local_id) if local_id.present?
+
+      Product.find_by(external_id: product_id)
+    end
+
     def product_id
-      data[:product_id].presence || metadata[:dodo_product_id].presence ||
-        existing_subscription&.product&.external_id
+      metadata[:dodo_product_id].presence || data[:product_id].presence ||
+        data[:product_cart].to_a.first.to_h.with_indifferent_access[:product_id].presence ||
+        existing_subscription&.product&.external_id || existing_order&.product&.external_id
+    end
+
+    def payment_id
+      data[:payment_id].presence || data[:id].presence
     end
 
     def subscription_id
       data[:subscription_id].presence || data[:id].presence
     end
 
+    def existing_order
+      return if payment_id.blank?
+
+      @existing_order ||= Order.includes(:user, :product).find_by(external_id: payment_id)
+    end
+
     def existing_subscription
       return if subscription_id.blank?
 
-      @existing_subscription ||= Subscription.includes(:customer, :product).find_by(
+      @existing_subscription ||= Subscription.includes(:product, customer: :user).find_by(
         external_id: subscription_id,
       )
-    end
-
-    def active_subscription_exists_for?(user, product)
-      Subscription
-        .joins(:customer)
-        .where(
-          product_id: product.id,
-          Customer.table_name => {
-            user_id: user.id,
-          },
-        )
-        .where(status: Subscription::GRANTING_STATUSES)
-        .exists?
     end
 
     def parse_time(value)

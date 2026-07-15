@@ -52,6 +52,23 @@ export default class AdminPluginsDiscourseDodoSubscriptionsProductsController ex
     ];
   }
 
+  get billingTypes() {
+    return [
+      {
+        value: "subscription",
+        label: i18n(
+          "discourse_dodo_subscriptions.admin.products.billing_types.subscription",
+        ),
+      },
+      {
+        value: "one_time",
+        label: i18n(
+          "discourse_dodo_subscriptions.admin.products.billing_types.one_time",
+        ),
+      },
+    ];
+  }
+
   loadGroups() {
     Group.findAll({ ignore_automatic: true }).then((groups) => {
       this.set("groups", groups);
@@ -76,6 +93,14 @@ export default class AdminPluginsDiscourseDodoSubscriptionsProductsController ex
   @action
   updateProductInterval(product, interval) {
     product.set("recurring_interval", interval);
+  }
+
+  @action
+  updateProductBillingType(product, billingType) {
+    product.set("billing_type", billingType);
+    if (billingType !== "one_time") {
+      product.set("wechat_pay_enabled", false);
+    }
   }
 
   @action
@@ -104,7 +129,7 @@ export default class AdminPluginsDiscourseDodoSubscriptionsProductsController ex
 
     this.dialog.confirm({
       message: i18n(
-        "discourse_dodo_subscriptions.admin.products.delete_confirm"
+        "discourse_dodo_subscriptions.admin.products.delete_confirm",
       ),
       didConfirm: () => {
         product

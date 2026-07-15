@@ -12,18 +12,21 @@ zh_CN:
     discourse_dodo_subscriptions_environment: Dodo Payments 环境。测试 API Key 用 test，正式 API Key 用 live。
     discourse_dodo_subscriptions_base_url: 覆盖 Dodo Payments API 基础 URL。通常留空，会根据 test/live 自动选择；这里不是商品 ID。
     discourse_dodo_subscriptions_enable_verbose_logging: 启用更详细的 Dodo Payments 订阅日志，用于调试。
+    discourse_dodo_subscriptions_reminder_days: 一次性会员到期提醒天数，使用英文逗号分隔，例如 7,3,1。
+    discourse_dodo_subscriptions_notify_on_purchase: 会员开通或续期后发送系统通知。
+    discourse_dodo_subscriptions_notify_on_expiration: 一次性会员最终到期后发送系统通知。
   js:
     discourse_dodo_subscriptions:
       admin_navigation: Dodo 订阅
       navigation:
-        subscribe: 订阅
-        subscriptions: 订阅
+        subscribe: 会员
+        subscriptions: 会员
       user:
         navigation:
           subscriptions: 我的订阅
           subscribe: 订阅
         subscriptions:
-          title: 我的订阅
+          title: 我的会员
           summary: 查看当前订阅状态、续费时间和访问权限。
           id: 订阅 ID
           plan: 当前方案
@@ -36,7 +39,9 @@ zh_CN:
           expires_at: 到期时间
           started_at: 开始时间
           renewal: 续费状态
+          one_time_rate: "%{amount}，有效期 %{duration}"
           renews_automatically: 自动续费
+          renews_manually: 到期前手动续费
           expires_at_period_end: 当前周期结束后停止
           not_renewing: 不会自动续费
           cancel_at_period_end: 周期末结束
@@ -51,41 +56,124 @@ zh_CN:
             failed: 付款失败
             expired: 已过期
             on_hold: 暂停
+            paused: 暂停
+            revoked: 已终止
+            refunded: 已退款
+            succeeded: 等待生效
             unknown: 未知
+          access_type: 开通方式
+          billing_types:
+            subscription: 自动续费
+            one_time: 一次性购买
       intervals:
         month: 每月
         quarter: 每季度
         half_year: 每半年
         year: 每年
+      durations:
+        month: 1 个月
+        quarter: 3 个月
+        half_year: 6 个月
+        year: 1 年
       subscribe:
-        title: 订阅
-        no_products: 当前没有可用订阅。
-        login_required: 登录或创建账号后即可订阅。
-        already_subscribed: 你已经订阅。
+        title: 会员方案
+        no_products: 当前没有可用会员方案。
+        login_required: 登录或创建账号后即可开通会员。
+        already_subscribed: 你正在自动续费。
         checkout: 前往结账
         checkout_loading: 正在创建结账...
         checkout_error: 无法创建结账。
         pending_checkout: 已有一个结账正在进行，请先完成或稍后再试。
         monthly_equivalent: "约 %{amount} / 月"
         save_percent: "省 %{percent}%"
-        success_title: 已收到结账结果
-        success_body: 订阅确认后，你的访问权限会自动更新。
-        view_subscriptions: 查看我的订阅
+        success_title: 已收到支付结果
+        success_body: 支付确认后，你的会员权限和有效期会自动更新。
+        view_subscriptions: 查看我的会员
+        wechat_supported: 支持微信支付
+        billing_types:
+          subscription: 自动续费
+          one_time: 一次性购买
+        payment_notes:
+          subscription: 使用信用卡或借记卡，按周期自动扣款
+          one_time: 仅支付一次，到期前可自行续费
+        conflicts:
+          active_subscription: 当前已有自动续费方案，请先结束订阅后再使用一次性购买。
+          active_one_time: 当前一次性会员仍在有效期内，到期后可切换自动续费。
       admin:
+        navigation:
+          label: 会员管理
+          products: 套餐配置
+          orders: 订单与补单
         products:
-          title: Dodo 订阅商品
-          help: 每个 Dodo Payments 商品 ID 创建一行。金额、货币和周期只用于 Discourse 页面展示；真实扣款价格和计费周期仍以 Dodo 商品为准。
+          title: Dodo 会员套餐
+          help: 每个 Dodo 商品对应一个购买选项；相同套餐分组会合并为一张用户卡片，可同时配置自动续费与一次性微信购买。
           add: 添加商品
           save: 保存商品
           delete: 删除
           external_id: Dodo 商品 ID
           name: 展示名称
+          plan_key: 套餐分组
+          billing_type: 支付类型
           group_name: Discourse 用户组名称
           amount: 展示金额
           amount_cents: 展示金额内部值
           currency: 货币
           recurring_interval: 计费周期
+          access_interval: 周期 / 有效期
+          position: 展示顺序
           description: 描述
           active: 启用
           repurchaseable: 可重复购买
+          wechat_pay_enabled: 一次性购买启用微信支付
           delete_confirm: 确定删除这个 Dodo 订阅商品吗？
+          billing_types:
+            subscription: 自动续费订阅
+            one_time: 一次性购买
+        orders:
+          title: 会员订单
+          subscriptions_title: 自动续费订阅
+          manual_title: 人工补单
+          manual_help: 为线下转账、赠送或其他场景创建可审计的会员订单，时间默认从当前有效期末继续顺延。
+          user: 用户名或邮箱
+          product: 套餐
+          duration_days: 自定义天数（留空使用套餐周期）
+          amount: 实收金额
+          payment_method: 支付方式
+          note: 备注
+          operation_note: 操作备注
+          notify_user: 通知用户
+          create: 创建补单
+          source: 来源
+          expires_at: 到期时间
+          next_billing: 下次扣款
+          external_id: 订单号
+          days: 天数
+          extend: 延长
+          set_expiry: 设置到期
+          revoke: 终止
+          revoke_confirm: 确定终止这笔订单对应的会员权益吗？
+          missing_fields: 请填写用户和套餐。
+          search_placeholder: 搜索用户名、邮箱
+          search: 查询
+          empty: 暂无会员订单。
+          no_subscriptions: 暂无自动续费订阅。
+          summary:
+            active: 当前有效
+            expiring: 7 天内到期
+            expired: 已到期
+            manual: 人工补单
+            subscriptions: 自动续费中
+          statuses:
+            succeeded: 有效
+            active: 有效
+            renewed: 有效
+            cancelled: 已取消
+            failed: 付款失败
+            on_hold: 暂停
+            paused: 暂停
+            expired: 已到期
+            revoked: 已终止
+            refunded: 已退款
+          sources:
+            dodo: Dodo 支付
+            manual: 人工补单
